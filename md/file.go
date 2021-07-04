@@ -45,7 +45,7 @@ func (f *File) Decode(r io.Reader) error {
 		if _, err := io.CopyN(b, r, int64(versionLength)); err != nil {
 			return err
 		}
-		f.Version = b.String()
+		f.Version = strings.TrimRight(b.String(), "\x00")
 	}
 
 	// Number of streams, say n.
