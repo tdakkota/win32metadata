@@ -7,7 +7,7 @@ import (
 )
 
 func TestRead(t *testing.T) {
-	f, err := pe.Open(`./.windows/winmd/Windows.Win32.winmd`)
+	f, err := pe.Open(`./testdata/.windows/winmd/Windows.Win32.winmd`)
 	if err != nil {
 		t.Fatal(err)
 	}
