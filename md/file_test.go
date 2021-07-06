@@ -2,11 +2,15 @@ package md
 
 import (
 	"debug/pe"
-	"fmt"
 	"testing"
+	"unsafe"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestRead(t *testing.T) {
+	a := require.New(t)
+
 	f, err := pe.Open(`./testdata/.windows/winmd/Windows.Win32.winmd`)
 	if err != nil {
 		t.Fatal(err)
@@ -17,6 +21,7 @@ func TestRead(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	a.Equal(int(unsafe.Sizeof(header)), int(header.CB))
 
 	r, err := getMetadataReader(f, header)
 	if err != nil {
@@ -28,7 +33,7 @@ func TestRead(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, hdr := range file.StreamHeaders {
-		fmt.Println(hdr.Name)
-	}
+	a.Equal(uint16(1), file.MajorVersion)
+	a.Equal(uint16(1), file.MinorVersion)
+	a.Equal("v4.0.30319", file.Version)
 }
