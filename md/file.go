@@ -2,12 +2,12 @@ package md
 
 import (
 	"bytes"
-	"encoding/binary"
 	"io"
 	"strings"
 )
 
-type File struct {
+// MetadataRoot is a representation of II.24.2.1 Metadata root
+type MetadataRoot struct {
 	MajorVersion  uint16
 	MinorVersion  uint16
 	Reserved      [4]byte
@@ -16,12 +16,8 @@ type File struct {
 	StreamHeaders []StreamHeader
 }
 
-func (f *File) Decode(r io.Reader) error {
-	var readErr error
-	read := func(data interface{}) bool {
-		readErr = binary.Read(r, binary.LittleEndian, data)
-		return readErr == nil
-	}
+func (m *MetadataRoot) Decode(r io.Reader) error {
+	rr := reader{r: r}
 
 	// II.24.2.1 Metadata root
 	//
@@ -31,11 +27,11 @@ func (f *File) Decode(r io.Reader) error {
 	// the length x is m rounded up to a multiple of four.
 	var versionLength uint32
 
-	if !read(&f.MajorVersion) ||
-		!read(&f.MinorVersion) ||
-		!read(&f.Reserved) ||
-		!read(&versionLength) {
-		return readErr
+	if !rr.Read(&m.MajorVersion) ||
+		!rr.Read(&m.MinorVersion) ||
+		!rr.Read(&m.Reserved) ||
+		!rr.Read(&versionLength) {
+		return rr.Err()
 	}
 
 	{
@@ -45,13 +41,13 @@ func (f *File) Decode(r io.Reader) error {
 		if _, err := io.CopyN(b, r, int64(versionLength)); err != nil {
 			return err
 		}
-		f.Version = strings.TrimRight(b.String(), "\x00")
+		m.Version = strings.TrimRight(b.String(), "\x00")
 	}
 
 	// Number of streams, say n.
 	var streamsN uint16
-	if !read(&f.Flags) || !read(&streamsN) {
-		return readErr
+	if !rr.Read(&m.Flags) || !rr.Read(&streamsN) {
+		return rr.Err()
 	}
 
 	var hdr StreamHeader
@@ -59,27 +55,24 @@ func (f *File) Decode(r io.Reader) error {
 		if err := hdr.Decode(r); err != nil {
 			return err
 		}
-		f.StreamHeaders = append(f.StreamHeaders, hdr)
+		m.StreamHeaders = append(m.StreamHeaders, hdr)
 	}
 
 	return nil
 }
 
+// StreamHeader is a representation of II.24.2.2 Stream header.
 type StreamHeader struct {
 	Offset uint32
 	Size   uint32
 	Name   string
 }
 
-func (s *StreamHeader) Decode(r io.Reader) error {
-	var readErr error
-	read := func(data interface{}) bool {
-		readErr = binary.Read(r, binary.LittleEndian, data)
-		return readErr == nil
-	}
+func (h *StreamHeader) Decode(r io.Reader) error {
+	rr := reader{r: r}
 
-	if !read(&s.Offset) || !read(&s.Size) {
-		return readErr
+	if !rr.Read(&h.Offset) || !rr.Read(&h.Size) {
+		return rr.Err()
 	}
 
 	// II.24.2.2 Stream header
@@ -104,7 +97,7 @@ func (s *StreamHeader) Decode(r io.Reader) error {
 		}
 		b.Write(buf)
 	}
-	s.Name = b.String()
+	h.Name = b.String()
 
 	return nil
 }
