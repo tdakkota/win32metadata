@@ -3,7 +3,6 @@ package md
 import (
 	"debug/pe"
 	"testing"
-	"unsafe"
 
 	"github.com/stretchr/testify/require"
 )
@@ -17,23 +16,18 @@ func TestRead(t *testing.T) {
 	}
 	defer f.Close()
 
-	header, err := getCLIHeader(f)
-	if err != nil {
-		t.Fatal(err)
-	}
-	a.Equal(int(unsafe.Sizeof(header)), int(header.CB))
+	file, err := ParseMetadata(f)
+	a.NoError(err)
 
-	r, err := getMetadataReader(f, header)
-	if err != nil {
-		t.Fatal(err)
-	}
+	section, err := file.StreamByName("#~")
+	a.NoError(err)
 
-	var file File
-	if err := file.Decode(r); err != nil {
+	var header TablesHeader
+	if err := header.Decode(section); err != nil {
 		t.Fatal(err)
 	}
 
-	a.Equal(uint16(1), file.MajorVersion)
-	a.Equal(uint16(1), file.MinorVersion)
-	a.Equal("v4.0.30319", file.Version)
+	a.Equal([4]byte{}, header.Reserved)
+	a.Equal(byte(2), header.MajorVersion)
+	a.Equal(byte(0), header.MinorVersion)
 }
