@@ -24,6 +24,8 @@ type CLIHeader struct {
 	ManagedNativeHeader            pe.DataDirectory
 }
 
+// findSection finds section by virtual address.
+// Returns error if section not found.
 func findSection(sections []*pe.Section, va uint32) (*pe.Section, error) {
 	var section *pe.Section
 	for _, s := range sections {
@@ -39,6 +41,7 @@ func findSection(sections []*pe.Section, va uint32) (*pe.Section, error) {
 	return section, nil
 }
 
+// getCLIHeader finds CLIHeader (COM descriptor) structure in PE file.
 func getCLIHeader(f *pe.File) (CLIHeader, error) {
 	// See II.25.2.3.3 PE header data directories.
 	const IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR = (208 - 96) / 8 // 14

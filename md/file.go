@@ -16,6 +16,7 @@ type MetadataRoot struct {
 	StreamHeaders []StreamHeader
 }
 
+// Decode decodes MetadataRoot from stream.
 func (m *MetadataRoot) Decode(r io.Reader) error {
 	rr := reader{r: r}
 
@@ -68,6 +69,7 @@ type StreamHeader struct {
 	Name   string
 }
 
+// Decode decodes StreamHeader from stream.
 func (h *StreamHeader) Decode(r io.Reader) error {
 	rr := reader{r: r}
 
