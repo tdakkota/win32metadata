@@ -5,7 +5,7 @@ import (
 )
 
 type RowCount struct {
-	Tag   int
+	Tag   TableType
 	Count uint32
 }
 
@@ -22,7 +22,7 @@ type TablesHeader struct {
 }
 
 // StringIndexSize returns size of index of "#String" heap.
-func (h TablesHeader) StringIndexSize() int {
+func (h TablesHeader) StringIndexSize() uint32 {
 	if h.HeapSizes&1 == 1 {
 		return 4
 	}
@@ -30,7 +30,7 @@ func (h TablesHeader) StringIndexSize() int {
 }
 
 // BlobIndexSize returns size of index of "#Blob" heap.
-func (h TablesHeader) BlobIndexSize() int {
+func (h TablesHeader) BlobIndexSize() uint32 {
 	if (h.HeapSizes>>2)&1 == 1 {
 		return 4
 	}
@@ -38,7 +38,7 @@ func (h TablesHeader) BlobIndexSize() int {
 }
 
 // GUIDIndexSize returns size of index of "#GUID" heap.
-func (h TablesHeader) GUIDIndexSize() int {
+func (h TablesHeader) GUIDIndexSize() uint32 {
 	if (h.HeapSizes>>1)&1 == 1 {
 		return 4
 	}
@@ -73,7 +73,7 @@ func (h *TablesHeader) Decode(r io.Reader) error {
 			return rr.Err()
 		}
 		h.Rows = append(h.Rows, RowCount{
-			Tag:   i,
+			Tag:   TableType(i),
 			Count: row,
 		})
 	}

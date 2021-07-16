@@ -56,10 +56,24 @@ type Column struct {
 
 // Table represents metadata table header.
 type Table struct {
-	Type    TableType
-	Rows    uint32
-	RowSize uint32
-	Columns [6]Column
+	Type     TableType
+	RowCount uint32
+	RowSize  uint32
+	Columns  [6]Column
+}
+
+// Find returns offset of given column in row.
+func (t Table) Find(row, column uint32) uint32 {
+	return row*t.RowSize + t.Columns[column].Offset
+}
+
+// IndexSize returns size of table index.
+func (t Table) IndexSize() uint32 {
+	if t.RowCount < (1 << 16) {
+		return 2
+	} else {
+		return 4
+	}
 }
 
 // SetRowType sets rows sizes.
@@ -73,4 +87,31 @@ func (t *Table) SetRowType(sizes [6]uint32) {
 		}
 		t.RowSize += column
 	}
+}
+
+func compositeIndexSize(t ...Table) uint32 {
+	small := func(rowCount uint32, bits uint8) bool {
+		return uint64(rowCount) < (uint64(1) << (16 - bits))
+	}
+
+	bitsNeeded := func(value int) (bits uint8) {
+		value -= 1
+		bits = 1
+		for {
+			value >>= 1
+			if value == 0 {
+				break
+			}
+			bits += 1
+		}
+		return bits
+	}
+
+	bits := bitsNeeded(len(t))
+	for i := range t {
+		if !small(t[i].RowCount, bits) {
+			return 4
+		}
+	}
+	return 2
 }
