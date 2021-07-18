@@ -1,5 +1,7 @@
 package md
 
+import "fmt"
+
 // TableType is a metadata table type.
 //
 // See II.22.1 Metadata validation rules.
@@ -54,6 +56,11 @@ type Column struct {
 	Size uint32
 }
 
+// Zero denotes that column has zero value.
+func (c Column) Zero() bool {
+	return c == Column{}
+}
+
 // Table represents metadata table header.
 type Table struct {
 	Type     TableType
@@ -64,7 +71,15 @@ type Table struct {
 
 // Find returns offset of given column in row.
 func (t Table) Find(row, column uint32) uint32 {
-	return row*t.RowSize + t.Columns[column].Offset
+	c := t.Columns[column]
+	if c.Zero() {
+		panic(fmt.Sprintf("type %#x does not have column %d", t.Type, column))
+	}
+	if row >= t.RowCount {
+		panic(fmt.Sprintf("row index %d is out of bounds (%d)", row, t.RowCount))
+	}
+
+	return row*t.RowSize + c.Offset
 }
 
 // IndexSize returns size of table index.
@@ -81,6 +96,9 @@ func (t Table) IndexSize() uint32 {
 func (t *Table) SetRowType(sizes [6]uint32) {
 	t.RowSize = 0
 	for i, column := range sizes {
+		if column == 0 {
+			break
+		}
 		t.Columns[i] = Column{
 			Offset: t.RowSize,
 			Size:   column,
