@@ -1,6 +1,10 @@
 package md
 
-import "fmt"
+import (
+	"encoding/binary"
+	"fmt"
+	"io"
+)
 
 // TableType is a metadata table type.
 //
@@ -64,6 +68,7 @@ func (c Column) Zero() bool {
 // Table represents metadata table header.
 type Table struct {
 	Type     TableType
+	Offset   int64
 	RowCount uint32
 	RowSize  uint32
 	Columns  [6]Column
@@ -79,7 +84,27 @@ func (t Table) Find(row, column uint32) uint32 {
 		panic(fmt.Sprintf("row index %d is out of bounds (%d)", row, t.RowCount))
 	}
 
-	return row*t.RowSize + c.Offset
+	return uint32(t.Offset) + row*t.RowSize + c.Offset
+}
+
+// Uint32 returns numeric value truncated to uint32.
+func (t Table) Uint32(r io.ReaderAt, row, column uint32) (uint32, error) {
+	offset := t.Find(row, column)
+	buf := make([]byte, t.Columns[column].Size, 8)
+	if _, err := r.ReadAt(buf, int64(offset)); err != nil {
+		return 0, err
+	}
+
+	switch len(buf) {
+	case 1:
+		return uint32(buf[0]), nil
+	case 2:
+		return uint32(binary.LittleEndian.Uint16(buf)), nil
+	case 4:
+		return binary.LittleEndian.Uint32(buf), nil
+	default:
+		return uint32(binary.LittleEndian.Uint64(buf)), nil
+	}
 }
 
 // IndexSize returns size of table index.
@@ -105,31 +130,4 @@ func (t *Table) SetRowType(sizes [6]uint32) {
 		}
 		t.RowSize += column
 	}
-}
-
-func compositeIndexSize(t ...Table) uint32 {
-	small := func(rowCount uint32, bits uint8) bool {
-		return uint64(rowCount) < (uint64(1) << (16 - bits))
-	}
-
-	bitsNeeded := func(value int) (bits uint8) {
-		value -= 1
-		bits = 1
-		for {
-			value >>= 1
-			if value == 0 {
-				break
-			}
-			bits += 1
-		}
-		return bits
-	}
-
-	bits := bitsNeeded(len(t))
-	for i := range t {
-		if !small(t[i].RowCount, bits) {
-			return 4
-		}
-	}
-	return 2
 }

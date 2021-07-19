@@ -18,7 +18,7 @@ type TablesHeader struct {
 	Reserved2    [1]byte
 	Valid        uint64
 	Sorted       uint64
-	Rows         []RowCount
+	Tables       [GenericParamConstraint + 1]Table
 }
 
 // StringIndexSize returns size of index of "#String" heap.
@@ -63,7 +63,10 @@ func (h *TablesHeader) Decode(r io.Reader) error {
 	// ...
 	// The Valid field is a 64-bit bitvector that has a specific bit set for each table that is stored in the stream;
 	// the mapping of tables to indexes is given at the start of §II.22.
-	var row uint32
+	var (
+		row    uint32
+		offset int64 = 24 // Constant structure size
+	)
 	for i := 0; i < 64; i++ {
 		if h.Valid>>i&1 == 0 {
 			continue
@@ -72,11 +75,20 @@ func (h *TablesHeader) Decode(r io.Reader) error {
 		if !rr.Read(&row) {
 			return rr.Err()
 		}
-		h.Rows = append(h.Rows, RowCount{
-			Tag:   TableType(i),
-			Count: row,
-		})
+		offset += 4
+		h.Tables[i] = Table{
+			Type:     TableType(i),
+			RowCount: row,
+		}
 	}
+	h.computeIndexes()
 
+	// Compute data offsets of every table.
+	{
+		for i, table := range h.Tables {
+			h.Tables[i].Offset = offset
+			offset += int64(table.RowCount * table.RowSize)
+		}
+	}
 	return nil
 }
