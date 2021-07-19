@@ -19,13 +19,8 @@ func TestRead(t *testing.T) {
 	file, err := ParseMetadata(f)
 	a.NoError(err)
 
-	section, err := file.StreamByName("#~")
+	header, section, err := file.Tables()
 	a.NoError(err)
-
-	var header TablesHeader
-	if err := header.Decode(section); err != nil {
-		t.Fatal(err)
-	}
 
 	a.Equal([4]byte{}, header.Reserved)
 	a.Equal(byte(2), header.MajorVersion)
@@ -71,4 +66,27 @@ func TestRead(t *testing.T) {
 	v, err := tables[TypeRef].Uint32(section, 0, 0)
 	a.NoError(err)
 	a.Equal(uint32(4), v)
+
+	{
+		fields := []string{
+			"value__",
+			"ENABLE_ECHO_INPUT",
+			"ENABLE_INSERT_MODE",
+			"ENABLE_LINE_INPUT",
+			"ENABLE_MOUSE_INPUT",
+			"ENABLE_PROCESSED_INPUT",
+			"ENABLE_QUICK_EDIT_MODE",
+			"ENABLE_WINDOW_INPUT",
+			"ENABLE_VIRTUAL_TERMINAL_INPUT",
+			"ENABLE_PROCESSED_OUTPUT",
+		}
+
+		for i, name := range fields {
+			idx, err := tables[Field].Uint32(section, uint32(i), 1)
+			a.NoError(err)
+			fieldName, err := file.ReadString(idx)
+			a.NoError(err)
+			a.Equal(name, fieldName)
+		}
+	}
 }
