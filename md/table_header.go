@@ -4,11 +4,6 @@ import (
 	"io"
 )
 
-type RowCount struct {
-	Tag   TableType
-	Count uint32
-}
-
 // TablesHeader is a representation of II.24.2.6 #~ stream.
 type TablesHeader struct {
 	Reserved     [4]byte
