@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"unsafe"
 )
 
 // CLIHeader is a II.25.3.3 CLI header representation.
@@ -63,7 +62,8 @@ func getCLIHeader(f *pe.File) (CLIHeader, error) {
 		return CLIHeader{}, err
 	}
 
-	const HeaderSize = int64(unsafe.Sizeof(CLIHeader{}))
+	const HeaderSize = 72 // int64(unsafe.Sizeof(CLIHeader{}))
+	fmt.Println(HeaderSize)
 	headerReader := io.NewSectionReader(
 		section,
 		int64(comVirtualAddress-section.VirtualAddress),

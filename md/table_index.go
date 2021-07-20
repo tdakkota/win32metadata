@@ -146,14 +146,14 @@ func compositeIndexSize(t ...Table) uint32 {
 	}
 
 	bitsNeeded := func(value int) (bits uint8) {
-		value -= 1
+		value--
 		bits = 1
 		for {
 			value >>= 1
 			if value == 0 {
 				break
 			}
-			bits += 1
+			bits++
 		}
 		return bits
 	}

@@ -88,7 +88,7 @@ func (h *StreamHeader) Decode(r io.Reader) error {
 		buf = make([]byte, 4)
 	)
 	for i := 0; i < 32; i++ {
-		if _, err := io.ReadFull(r, buf[:]); err != nil {
+		if _, err := io.ReadFull(r, buf); err != nil {
 			return err
 		}
 

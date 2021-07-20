@@ -79,11 +79,9 @@ func (h *TablesHeader) Decode(r io.Reader) error {
 	h.computeIndexes()
 
 	// Compute data offsets of every table.
-	{
-		for i, table := range h.Tables {
-			h.Tables[i].Offset = offset
-			offset += int64(table.RowCount * table.RowSize)
-		}
+	for i, table := range &h.Tables {
+		h.Tables[i].Offset = offset
+		offset += int64(table.RowCount * table.RowSize)
 	}
 	return nil
 }

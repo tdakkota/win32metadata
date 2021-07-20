@@ -12,43 +12,81 @@ import (
 type TableType int
 
 const (
-	Module                 TableType = 0x00
-	TypeRef                TableType = 0x01
-	TypeDef                TableType = 0x02
-	Field                  TableType = 0x04
-	MethodDef              TableType = 0x06
-	Param                  TableType = 0x08
-	InterfaceImpl          TableType = 0x09
-	MemberRef              TableType = 0x0a
-	Constant               TableType = 0x0b
-	CustomAttribute        TableType = 0x0c
-	FieldMarshal           TableType = 0x0d
-	DeclSecurity           TableType = 0x0e
-	ClassLayout            TableType = 0x0f
-	FieldLayout            TableType = 0x10
-	StandaloneSig          TableType = 0x11
-	EventMap               TableType = 0x12
-	Event                  TableType = 0x14
-	PropertyMap            TableType = 0x15
-	Property               TableType = 0x17
-	MethodSemantics        TableType = 0x18
-	MethodImpl             TableType = 0x19
-	ModuleRef              TableType = 0x1a
-	TypeSpec               TableType = 0x1b
-	ImplMap                TableType = 0x1c
-	FieldRva               TableType = 0x1d
-	Assembly               TableType = 0x20
-	AssemblyProcessor      TableType = 0x21
-	AssemblyOs             TableType = 0x22
-	AssemblyRef            TableType = 0x23
-	AssemblyRefProcessor   TableType = 0x24
-	AssemblyRefOs          TableType = 0x25
-	File                   TableType = 0x26
-	ExportedType           TableType = 0x27
-	ManifestResource       TableType = 0x28
-	NestedClass            TableType = 0x29
-	GenericParam           TableType = 0x2a
-	MethodSpec             TableType = 0x2b
+	// Module table type.
+	Module TableType = 0x00
+	// TypeRef table type.
+	TypeRef TableType = 0x01
+	// TypeDef table type.
+	TypeDef TableType = 0x02
+	// Field table type.
+	Field TableType = 0x04
+	// MethodDef table type.
+	MethodDef TableType = 0x06
+	// Param table type.
+	Param TableType = 0x08
+	// InterfaceImpl table type.
+	InterfaceImpl TableType = 0x09
+	// MemberRef table type.
+	MemberRef TableType = 0x0a
+	// Constant table type.
+	Constant TableType = 0x0b
+	// CustomAttribute table type.
+	CustomAttribute TableType = 0x0c
+	// FieldMarshal table type.
+	FieldMarshal TableType = 0x0d
+	// DeclSecurity table type.
+	DeclSecurity TableType = 0x0e
+	// ClassLayout table type.
+	ClassLayout TableType = 0x0f
+	// FieldLayout table type.
+	FieldLayout TableType = 0x10
+	// StandaloneSig table type.
+	StandaloneSig TableType = 0x11
+	// EventMap table type.
+	EventMap TableType = 0x12
+	// Event table type.
+	Event TableType = 0x14
+	// PropertyMap table type.
+	PropertyMap TableType = 0x15
+	// Property table type.
+	Property TableType = 0x17
+	// MethodSemantics table type.
+	MethodSemantics TableType = 0x18
+	// MethodImpl table type.
+	MethodImpl TableType = 0x19
+	// ModuleRef table type.
+	ModuleRef TableType = 0x1a
+	// TypeSpec table type.
+	TypeSpec TableType = 0x1b
+	// ImplMap table type.
+	ImplMap TableType = 0x1c
+	// FieldRva table type.
+	FieldRva TableType = 0x1d
+	// Assembly table type.
+	Assembly TableType = 0x20
+	// AssemblyProcessor table type.
+	AssemblyProcessor TableType = 0x21
+	// AssemblyOs table type.
+	AssemblyOs TableType = 0x22
+	// AssemblyRef table type.
+	AssemblyRef TableType = 0x23
+	// AssemblyRefProcessor table type.
+	AssemblyRefProcessor TableType = 0x24
+	// AssemblyRefOs table type.
+	AssemblyRefOs TableType = 0x25
+	// File table type.
+	File TableType = 0x26
+	// ExportedType table type.
+	ExportedType TableType = 0x27
+	// ManifestResource table type.
+	ManifestResource TableType = 0x28
+	// NestedClass table type.
+	NestedClass TableType = 0x29
+	// GenericParam table type.
+	GenericParam TableType = 0x2a
+	// MethodSpec table type.
+	MethodSpec TableType = 0x2b
+	// GenericParamConstraint table type.
 	GenericParamConstraint TableType = 0x2c
 )
 
@@ -111,9 +149,9 @@ func (t Table) Uint32(r io.ReaderAt, row, column uint32) (uint32, error) {
 func (t Table) IndexSize() uint32 {
 	if t.RowCount < (1 << 16) {
 		return 2
-	} else {
-		return 4
 	}
+
+	return 4
 }
 
 // SetRowType sets rows sizes.
