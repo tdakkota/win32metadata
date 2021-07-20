@@ -14,7 +14,7 @@ type Metadata struct {
 	MetadataRoot
 }
 
-func (m Metadata) findStreamHeader(name string) (StreamHeader, bool) {
+func (m *Metadata) findStreamHeader(name string) (StreamHeader, bool) {
 	for _, shr := range m.StreamHeaders {
 		if shr.Name == name {
 			return shr, true
@@ -24,7 +24,7 @@ func (m Metadata) findStreamHeader(name string) (StreamHeader, bool) {
 }
 
 // StreamByName finds and returns metadata section reader by name.
-func (m Metadata) StreamByName(name string) (*io.SectionReader, error) {
+func (m *Metadata) StreamByName(name string) (*io.SectionReader, error) {
 	shr, ok := m.findStreamHeader(name)
 	if !ok {
 		return nil, fmt.Errorf("section %q not found", name)
@@ -33,8 +33,8 @@ func (m Metadata) StreamByName(name string) (*io.SectionReader, error) {
 	return io.NewSectionReader(m.r, int64(shr.Offset), int64(shr.Size)), nil
 }
 
-// Tables decodes metadata Tables header and returns it and table data reader.
-func (m Metadata) Tables() (TablesHeader, *io.SectionReader, error) {
+// Tables decodes metadata tables header and returns it and table data reader.
+func (m *Metadata) Tables() (TablesHeader, *io.SectionReader, error) {
 	section, err := m.StreamByName("#~")
 	if err != nil {
 		return TablesHeader{}, nil, err
@@ -49,7 +49,7 @@ func (m Metadata) Tables() (TablesHeader, *io.SectionReader, error) {
 }
 
 // ReadString reads string from String heap.
-func (m Metadata) ReadString(idx uint32) (string, error) {
+func (m *Metadata) ReadString(idx uint32) (string, error) {
 	heap, ok := m.findStreamHeader("#Strings")
 	if !ok {
 		return "", fmt.Errorf("string heap section not found")
@@ -77,23 +77,23 @@ func (m Metadata) ReadString(idx uint32) (string, error) {
 }
 
 // ParseMetadata parses and creates Metadata from given PE file.
-func ParseMetadata(f *pe.File) (Metadata, error) {
+func ParseMetadata(f *pe.File) (*Metadata, error) {
 	cliHeader, err := getCLIHeader(f)
 	if err != nil {
-		return Metadata{}, err
+		return nil, err
 	}
 
 	r, err := getMetadataReader(f, cliHeader)
 	if err != nil {
-		return Metadata{}, err
+		return nil, err
 	}
 
 	var root MetadataRoot
 	if err := root.Decode(r); err != nil {
-		return Metadata{}, err
+		return nil, err
 	}
 
-	return Metadata{
+	return &Metadata{
 		r:            r,
 		MetadataRoot: root,
 	}, nil
