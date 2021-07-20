@@ -80,13 +80,36 @@ func TestRead(t *testing.T) {
 			"ENABLE_VIRTUAL_TERMINAL_INPUT",
 			"ENABLE_PROCESSED_OUTPUT",
 		}
+		blobs := []struct {
+			length    int
+			firstByte byte
+		}{
+			{2, 6},
+			{3, 6},
+			{3, 6},
+			{3, 6},
+			{3, 6},
+			{3, 6},
+			{3, 6},
+			{3, 6},
+			{3, 6},
+			{3, 6},
+		}
 
+		field := tables[Field]
 		for i, name := range fields {
-			idx, err := tables[Field].Uint32(section, uint32(i), 1)
+			idx, err := field.Uint32(section, uint32(i), 1)
 			a.NoError(err)
 			fieldName, err := file.ReadString(idx)
 			a.NoError(err)
 			a.Equal(name, fieldName)
+
+			sig, err := field.Uint32(section, uint32(i), 2)
+			a.NoError(err)
+			blob, err := file.ReadBlob(sig)
+			a.NoError(err)
+			a.Len(blob, blobs[i].length)
+			a.Equal(blob[0], blobs[i].firstByte)
 		}
 	}
 }

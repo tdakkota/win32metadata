@@ -2,6 +2,7 @@ package md
 
 import (
 	"debug/pe"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"strings"
@@ -52,7 +53,7 @@ func (m *Metadata) Tables() (TablesHeader, *io.SectionReader, error) {
 func (m *Metadata) ReadString(idx uint32) (string, error) {
 	heap, ok := m.findStreamHeader("#Strings")
 	if !ok {
-		return "", fmt.Errorf("string heap section not found")
+		return "", fmt.Errorf("string heap stream not found")
 	}
 
 	var (
@@ -74,6 +75,50 @@ func (m *Metadata) ReadString(idx uint32) (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+// ReadBlob reads blob from Blob heap.
+func (m *Metadata) ReadBlob(idx uint32) ([]byte, error) {
+	// TODO(tdakkota): Decode blob lazily using io.Reader/some helper.
+
+	heap, ok := m.findStreamHeader("#Blob")
+	if !ok {
+		return nil, fmt.Errorf("blob heap stream not found")
+	}
+	var (
+		offset = int64(heap.Offset + idx)
+		buf    = make([]byte, 4)
+		// Size of blob data
+		blobSize int
+		// Size of length in bytes
+		lenSize int64
+	)
+
+	_, err := m.r.ReadAt(buf, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	switch v := buf[0] >> 5; {
+	case v <= 3:
+		lenSize = 1
+		blobSize = int(buf[0] & 0x7f)
+	case v >= 4 && v <= 5:
+		lenSize = 2
+		blobSize = int(binary.LittleEndian.Uint16([]byte{buf[0] & 0x3f, buf[1]}))
+	case v == 6:
+		lenSize = 4
+		blobSize = int(binary.LittleEndian.Uint32([]byte{buf[0] & 0x1f, buf[1], buf[2], buf[3]}))
+	default:
+		return nil, fmt.Errorf("invalid blob length: %d", buf[0])
+	}
+
+	buf = append(buf[:0], make([]byte, blobSize)...)
+	if _, err := m.r.ReadAt(buf, offset+lenSize); err != nil {
+		return nil, err
+	}
+
+	return buf, nil
 }
 
 // ParseMetadata parses and creates Metadata from given PE file.
