@@ -63,7 +63,6 @@ func getCLIHeader(f *pe.File) (CLIHeader, error) {
 	}
 
 	const HeaderSize = 72 // int64(unsafe.Sizeof(CLIHeader{}))
-	fmt.Println(HeaderSize)
 	headerReader := io.NewSectionReader(
 		section,
 		int64(comVirtualAddress-section.VirtualAddress),
