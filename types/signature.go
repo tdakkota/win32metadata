@@ -104,6 +104,7 @@ func (s *SignatureReader) elementType(c *Context) (ElementType, error) {
 		return t, nil
 	}
 
+	// TODO(tdakkota): complete implementation
 	switch ElementTypeKind(value) {
 	case ELEMENT_TYPE_VALUETYPE, ELEMENT_TYPE_CLASS:
 		r, ok := s.Read()
