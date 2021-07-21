@@ -94,6 +94,61 @@ func (t *Context) List(tt md.TableType, row, column uint32) (List, error) {
 	return List{first, last}, nil
 }
 
+// Table creates new Table associated with this Context.
+func (t *Context) Table(tt md.TableType) Table {
+	return Table{
+		Type: tt,
+		ctx:  t,
+	}
+}
+
+// Table is a simple helper to access one table.
+type Table struct {
+	Type md.TableType
+	ctx  *Context
+}
+
+// RowCount returns row count of this table.
+func (t Table) RowCount() int {
+	return t.ctx.RowCount(t.Type)
+}
+
+// Row creates new Row associated with this Table and underlying Context.
+func (t Table) Row(row uint32) Row {
+	return Row{Table: t, Row: row}
+}
+
+// Row is a simple helper to access one table row.
+type Row struct {
+	Table Table
+	Row   uint32
+}
+
+// Uint32 returns numeric value truncated to uint32.
+func (t *Row) Uint32(column uint32) (uint32, error) {
+	return t.Table.ctx.Uint32(t.Table.Type, t.Row, column)
+}
+
+// String finds string value from #Strings heap using given index column.
+func (t *Row) String(column uint32) (string, error) {
+	return t.Table.ctx.String(t.Table.Type, t.Row, column)
+}
+
+// Blob finds blob value from #Blob heap using given index column.
+func (t *Row) Blob(column uint32) (Blob, error) {
+	return t.Table.ctx.Blob(t.Table.Type, t.Row, column)
+}
+
+// Signature finds signature blob value from #Blob heap using given index column.
+func (t *Row) Signature(column uint32) (Signature, error) {
+	return t.Table.ctx.Signature(t.Table.Type, t.Row, column)
+}
+
+// List returns range of indexes using given index.
+func (t *Row) List(column uint32) (List, error) {
+	return t.Table.ctx.List(t.Table.Type, t.Row, column)
+}
+
 // ResolveTypeDefOrRefName resolves TypeDefOrRef name.
 func (t *Context) ResolveTypeDefOrRefName(ref TypeDefOrRef) (namespace, name string, err error) {
 	var (
