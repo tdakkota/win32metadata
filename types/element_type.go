@@ -78,19 +78,21 @@ const (
 	ELEMENT_TYPE_PINNED ElementTypeKind = 0x45
 )
 
+// ElementTypeArray is a ElementType union variant structure.
 type ElementTypeArray struct {
 	Elem *Element
 	Size uint32
 }
 
 // ElementType is a II.23.1.16 Element types used in signatures representation kind.
+// Only one of GenericParam, Array, MethodDef, Field, TypeDefOrRef fields should be present.
 type ElementType struct {
 	Kind         ElementTypeKind
 	GenericParam Index `table:"GenericParam"`
 	Array        ElementTypeArray
-	MethodDef    Index        `table:"MethodDef"`
-	Field        Index        `table:"Field"`
-	TypeDef      TypeDefOrRef `table:"TypeDef"`
+	MethodDef    Index `table:"MethodDef"`
+	Field        Index `table:"Field"`
+	TypeDefOrRef TypeDefOrRef
 }
 
 // FromCode tries to map code to ElementTypeKind.

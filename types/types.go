@@ -8,7 +8,7 @@ type (
 	// Blob represents #Blob heap index type.
 	Blob = []byte
 	// Signature represents Signature blob.
-	Signature = Blob
+	Signature Blob
 	// GUID represents #GUID heap index type.
 	GUID = Index
 )
