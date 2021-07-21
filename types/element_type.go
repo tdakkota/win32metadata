@@ -3,6 +3,8 @@ package types
 // ElementType is a II.23.1.16 Element types used in signatures representation.
 type ElementType uint16
 
+//go:generate go run golang.org/x/tools/cmd/stringer -type=ElementType
+
 const (
 	// ELEMENT_TYPE_END constant.
 	ELEMENT_TYPE_END ElementType = 0x00
