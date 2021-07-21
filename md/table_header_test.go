@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRead(t *testing.T) {
+func TestMetadata_Tables(t *testing.T) {
 	a := require.New(t)
 
 	f, err := pe.Open(`./testdata/.windows/winmd/Windows.Win32.winmd`)
