@@ -26,6 +26,20 @@ func (t TypeDefOrRef) TableIndex() uint32 {
 	return uint32((t >> 2) - 1)
 }
 
+// String implements fmt.Stringer method.
+func (t TypeDefOrRef) String() string {
+	switch t {
+	case 0:
+		return "TypeDef"
+	case 1:
+		return "TypeRef"
+	case 2:
+		return "TypeSpec"
+	default:
+		return "unknown"
+	}
+}
+
 // HasConstant represents index one of
 //
 // 	Field
@@ -49,6 +63,20 @@ func (t HasConstant) Tag() uint32 {
 // TableIndex returns HasConstant index.
 func (t HasConstant) TableIndex() uint32 {
 	return uint32((t >> 2) - 1)
+}
+
+// String implements fmt.Stringer method.
+func (t HasConstant) String() string {
+	switch t {
+	case 0:
+		return "Field"
+	case 1:
+		return "Param"
+	case 2:
+		return "Property"
+	default:
+		return "unknown"
+	}
 }
 
 // HasCustomAttribute represents index one of
@@ -114,6 +142,58 @@ func (t HasCustomAttribute) TableIndex() uint32 {
 	return uint32((t >> 5) - 1)
 }
 
+// String implements fmt.Stringer method.
+func (t HasCustomAttribute) String() string {
+	switch t {
+	case 0:
+		return "MethodDef"
+	case 1:
+		return "Field"
+	case 2:
+		return "TypeRef"
+	case 3:
+		return "TypeDef"
+	case 4:
+		return "Param"
+	case 5:
+		return "InterfaceImpl"
+	case 6:
+		return "MemberRef"
+	case 7:
+		return "Module"
+	case 8:
+		return "Permission"
+	case 9:
+		return "Property"
+	case 10:
+		return "Event"
+	case 11:
+		return "StandAloneSig"
+	case 12:
+		return "ModuleRef"
+	case 13:
+		return "TypeSpec"
+	case 14:
+		return "Assembly"
+	case 15:
+		return "AssemblyRef"
+	case 16:
+		return "File"
+	case 17:
+		return "ExportedType"
+	case 18:
+		return "ManifestResource"
+	case 19:
+		return "GenericParam"
+	case 20:
+		return "GenericParamConstraint"
+	case 21:
+		return "MethodSpec"
+	default:
+		return "unknown"
+	}
+}
+
 // HasFieldMarshall represents index one of
 //
 // 	Field
@@ -135,6 +215,18 @@ func (t HasFieldMarshall) Tag() uint32 {
 // TableIndex returns HasFieldMarshall index.
 func (t HasFieldMarshall) TableIndex() uint32 {
 	return uint32((t >> 1) - 1)
+}
+
+// String implements fmt.Stringer method.
+func (t HasFieldMarshall) String() string {
+	switch t {
+	case 0:
+		return "Field"
+	case 1:
+		return "Param"
+	default:
+		return "unknown"
+	}
 }
 
 // HasDeclSecurity represents index one of
@@ -160,6 +252,20 @@ func (t HasDeclSecurity) Tag() uint32 {
 // TableIndex returns HasDeclSecurity index.
 func (t HasDeclSecurity) TableIndex() uint32 {
 	return uint32((t >> 2) - 1)
+}
+
+// String implements fmt.Stringer method.
+func (t HasDeclSecurity) String() string {
+	switch t {
+	case 0:
+		return "TypeDef"
+	case 1:
+		return "MethodDef"
+	case 2:
+		return "Assembly"
+	default:
+		return "unknown"
+	}
 }
 
 // MemberRefParent represents index one of
@@ -191,6 +297,24 @@ func (t MemberRefParent) TableIndex() uint32 {
 	return uint32((t >> 3) - 1)
 }
 
+// String implements fmt.Stringer method.
+func (t MemberRefParent) String() string {
+	switch t {
+	case 0:
+		return "TypeDef"
+	case 1:
+		return "TypeRef"
+	case 2:
+		return "ModuleRef"
+	case 3:
+		return "MethodDef"
+	case 4:
+		return "TypeSpec"
+	default:
+		return "unknown"
+	}
+}
+
 // HasSemantics represents index one of
 //
 // 	Event
@@ -212,6 +336,18 @@ func (t HasSemantics) Tag() uint32 {
 // TableIndex returns HasSemantics index.
 func (t HasSemantics) TableIndex() uint32 {
 	return uint32((t >> 1) - 1)
+}
+
+// String implements fmt.Stringer method.
+func (t HasSemantics) String() string {
+	switch t {
+	case 0:
+		return "Event"
+	case 1:
+		return "Property"
+	default:
+		return "unknown"
+	}
 }
 
 // MethodDefOrRef represents index one of
@@ -237,6 +373,18 @@ func (t MethodDefOrRef) TableIndex() uint32 {
 	return uint32((t >> 1) - 1)
 }
 
+// String implements fmt.Stringer method.
+func (t MethodDefOrRef) String() string {
+	switch t {
+	case 0:
+		return "MethodDef"
+	case 1:
+		return "MemberRef"
+	default:
+		return "unknown"
+	}
+}
+
 // MemberForwarded represents index one of
 //
 // 	Field
@@ -258,6 +406,18 @@ func (t MemberForwarded) Tag() uint32 {
 // TableIndex returns MemberForwarded index.
 func (t MemberForwarded) TableIndex() uint32 {
 	return uint32((t >> 1) - 1)
+}
+
+// String implements fmt.Stringer method.
+func (t MemberForwarded) String() string {
+	switch t {
+	case 0:
+		return "Field"
+	case 1:
+		return "MethodDef"
+	default:
+		return "unknown"
+	}
 }
 
 // Implementation represents index one of
@@ -283,6 +443,20 @@ func (t Implementation) Tag() uint32 {
 // TableIndex returns Implementation index.
 func (t Implementation) TableIndex() uint32 {
 	return uint32((t >> 2) - 1)
+}
+
+// String implements fmt.Stringer method.
+func (t Implementation) String() string {
+	switch t {
+	case 0:
+		return "File"
+	case 1:
+		return "AssemblyRef"
+	case 2:
+		return "ExportedType"
+	default:
+		return "unknown"
+	}
 }
 
 // CustomAttributeType represents index one of
@@ -314,6 +488,24 @@ func (t CustomAttributeType) TableIndex() uint32 {
 	return uint32((t >> 3) - 1)
 }
 
+// String implements fmt.Stringer method.
+func (t CustomAttributeType) String() string {
+	switch t {
+	case 0:
+		return "Not used"
+	case 1:
+		return "Not used"
+	case 2:
+		return "MethodDef"
+	case 3:
+		return "MemberRef"
+	case 4:
+		return "Not used"
+	default:
+		return "unknown"
+	}
+}
+
 // ResolutionScope represents index one of
 //
 // 	Module
@@ -341,6 +533,22 @@ func (t ResolutionScope) TableIndex() uint32 {
 	return uint32((t >> 2) - 1)
 }
 
+// String implements fmt.Stringer method.
+func (t ResolutionScope) String() string {
+	switch t {
+	case 0:
+		return "Module"
+	case 1:
+		return "ModuleRef"
+	case 2:
+		return "AssemblyRef"
+	case 3:
+		return "TypeRef"
+	default:
+		return "unknown"
+	}
+}
+
 // TypeOrMethodDef represents index one of
 //
 // 	TypeDef
@@ -362,4 +570,16 @@ func (t TypeOrMethodDef) Tag() uint32 {
 // TableIndex returns TypeOrMethodDef index.
 func (t TypeOrMethodDef) TableIndex() uint32 {
 	return uint32((t >> 1) - 1)
+}
+
+// String implements fmt.Stringer method.
+func (t TypeOrMethodDef) String() string {
+	switch t {
+	case 0:
+		return "TypeDef"
+	case 1:
+		return "MethodDef"
+	default:
+		return "unknown"
+	}
 }

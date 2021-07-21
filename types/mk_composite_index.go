@@ -3,7 +3,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"go/format"
 	"io"
 	"log"
 	"os"
@@ -46,14 +48,22 @@ func (t {{ .Name }}) Tag() uint32 {
 func (t {{ .Name }}) TableIndex() uint32 {
 	return uint32((t >> {{ .Bits }}) - 1)
 }
+
+// String implements fmt.Stringer method.
+func (t {{ .Name }}) String() string {
+	switch t {
+	{{- range $tag := .Tags }}
+	case {{ $tag.Value }}:
+		return "{{ $tag.Name }}"
+	{{- end }}
+	default:
+		return "unknown"
+	}
+}
 `
 
 func run() error {
-	out, err := os.Create("composite_index.go")
-	if err != nil {
-		return fmt.Errorf("create file: %w", err)
-	}
-	defer out.Close()
+	out := &bytes.Buffer{}
 
 	t := template.Must(template.New("gen").Parse(indexTemplate))
 	indexes := []compositeIndex{
@@ -206,7 +216,12 @@ package types
 		}
 	}
 
-	return nil
+	formatted, err := format.Source(out.Bytes())
+	if err != nil {
+		return fmt.Errorf("format: %w", err)
+	}
+
+	return os.WriteFile("composite_index.go", formatted, 0o600)
 }
 
 func main() {
