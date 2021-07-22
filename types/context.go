@@ -75,14 +75,14 @@ func (t *Context) Signature(tt md.TableType, row, column uint32) (Signature, err
 }
 
 // List returns range of indexes using given index.
-func (t *Context) List(tt md.TableType, row, column uint32) (List, error) {
-	first, err := t.Uint32(tt, row, column)
+func (t *Context) List(tt md.TableType, row, column uint32, target md.TableType) (List, error) {
+	f, err := t.Uint32(tt, row, column)
 	if err != nil {
 		return List{}, err
 	}
-	first--
+	first := f - 1
 
-	last := t.Tables[tt].RowCount
+	last := t.Tables[target].RowCount
 	if row+1 < t.Tables[tt].RowCount {
 		l, err := t.Uint32(tt, row+1, column)
 		if err != nil {
@@ -150,8 +150,8 @@ func (t *Row) Signature(column uint32) (Signature, error) {
 }
 
 // List returns range of indexes using given index.
-func (t *Row) List(column uint32) (List, error) {
-	return t.Table.ctx.List(t.Table.Type, t.Row, column)
+func (t *Row) List(column uint32, target md.TableType) (List, error) {
+	return t.Table.ctx.List(t.Table.Type, t.Row, column, target)
 }
 
 // ResolveTypeDefOrRefName resolves TypeDefOrRef name.
