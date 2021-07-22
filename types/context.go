@@ -156,28 +156,17 @@ func (t *Row) List(column uint32, target md.TableType) (List, error) {
 
 // ResolveTypeDefOrRefName resolves TypeDefOrRef name.
 func (t *Context) ResolveTypeDefOrRefName(ref TypeDefOrRef) (namespace, name string, err error) {
-	var (
-		table  md.TableType
-		column uint32
-	)
-	switch tt := ref.Tag(); tt {
-	case 0: // TypeDef
-		table = md.TypeDef
-		column = 1
-	case 1: // TypeRef
-		table = md.TypeRef
-		column = 1
-	default: // TypeSpec, else
+	row, ok := ref.Row(t)
+	if !ok || ref.Tag() == 2 /* md.TypeSpec */ {
 		return "", "", fmt.Errorf("unexpected tag %v", ref)
 	}
-	row := t.Table(table).Row(ref.TableIndex())
 
-	name, err = row.String(column)
+	name, err = row.String(1)
 	if err != nil {
 		return "", "", err
 	}
 
-	namespace, err = row.String(column + 1)
+	namespace, err = row.String(2)
 	if err != nil {
 		return "", "", err
 	}
