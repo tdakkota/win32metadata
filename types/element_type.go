@@ -84,6 +84,12 @@ type ElementTypeArray struct {
 	Size uint32
 }
 
+// ElementTypeTypeDef is a ElementType union variant structure.
+type ElementTypeTypeDef struct {
+	Index    TypeDefOrRef
+	Generics []ElementType
+}
+
 // ElementType is a II.23.1.16 Element types used in signatures representation kind.
 // Only one of GenericParam, Array, MethodDef, Field, TypeDefOrRef fields should be present.
 type ElementType struct {
@@ -92,7 +98,7 @@ type ElementType struct {
 	Array        ElementTypeArray
 	MethodDef    Index `table:"MethodDef"`
 	Field        Index `table:"Field"`
-	TypeDefOrRef TypeDefOrRef
+	TypeDef      ElementTypeTypeDef
 }
 
 // FromCode tries to map code to ElementTypeKind.

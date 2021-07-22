@@ -111,17 +111,19 @@ func (s *SignatureReader) elementType(c *Context) (ElementType, error) {
 		if !ok {
 			return t, io.ErrUnexpectedEOF
 		}
-		t.TypeDefOrRef = TypeDefOrRef(r)
+		t.TypeDef.Index = TypeDefOrRef(r)
 
 		return t, nil
 	case ELEMENT_TYPE_VAR:
+		// TODO(tdakkota) complete type-associated generics support
 	case ELEMENT_TYPE_ARRAY:
 		elem, err := s.NextElement(c)
 		if err != nil {
 			return ElementType{}, err
 		}
-		s.Read()
-		s.Read()
+		// TODO(tdakkota): complete decoding according to II.23.2.13 ArrayShape.
+		s.Read() // rank
+		s.Read() // bounds count
 
 		size, ok := s.Read()
 		if !ok {
@@ -133,6 +135,37 @@ func (s *SignatureReader) elementType(c *Context) (ElementType, error) {
 		}
 		return t, nil
 	case ELEMENT_TYPE_GENERICINST:
+		s.Read() // (CLASS | VALUETYPE)
+		r, ok := s.Read()
+		if !ok {
+			return t, io.ErrUnexpectedEOF
+		}
+		t.TypeDef.Index = TypeDefOrRef(r)
+
+		args, ok := s.Read() // GenArgCount
+		if !ok {
+			return t, io.ErrUnexpectedEOF
+		}
+		for i := uint32(0); i < args; i++ {
+			arg, err := s.elementType(c)
+			if err != nil {
+				return t, err
+			}
+			t.TypeDef.Generics = append(t.TypeDef.Generics, arg)
+		}
+
+		return t, nil
+	case ELEMENT_TYPE_SZARRAY:
+		elem, err := s.NextElement(c)
+		if err != nil {
+			return ElementType{}, err
+		}
+
+		t.Array = ElementTypeArray{
+			Elem: &elem,
+			Size: 0,
+		}
+		return t, nil
 	}
 
 	return t, fmt.Errorf("unexpected element type %#x", value)
