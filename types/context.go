@@ -113,6 +113,11 @@ func (t Table) RowCount() int {
 	return t.ctx.RowCount(t.Type)
 }
 
+// Columns returns columns of this table.
+func (t Table) Columns() md.Columns {
+	return t.ctx.Tables[t.Type].Columns
+}
+
 // Row creates new Row associated with this Table and underlying Context.
 func (t Table) Row(row uint32) Row {
 	return Row{Table: t, Row: row}
@@ -167,13 +172,14 @@ func (t *Context) ResolveTypeDefOrRefName(ref TypeDefOrRef) (namespace, name str
 	default:
 		return "", "", fmt.Errorf("unexpected tag %v", ref)
 	}
+	row := t.Table(table).Row(ref.TableIndex())
 
-	name, err = t.String(table, ref.TableIndex(), column)
+	name, err = row.String(column)
 	if err != nil {
 		return "", "", err
 	}
 
-	namespace, err = t.String(table, ref.TableIndex(), column+1)
+	namespace, err = row.String(column + 1)
 	if err != nil {
 		return "", "", err
 	}

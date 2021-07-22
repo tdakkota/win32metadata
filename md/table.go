@@ -105,13 +105,16 @@ func (c Column) Zero() bool {
 	return c == Column{}
 }
 
+// Columns is a table columns list.
+type Columns = [6]Column
+
 // Table represents metadata table header.
 type Table struct {
 	Type     TableType
 	Offset   int64
 	RowCount uint32
 	RowSize  uint32
-	Columns  [6]Column
+	Columns  Columns
 }
 
 // Find returns offset of given column in row.
