@@ -7,10 +7,7 @@ type (
 	// Assembly is a II.22.2 Assembly representation.
 	Assembly struct {
 		HashAlgId AssemblyHashAlgorithm
-		MajorVersion,
-		MinorVersion,
-		BuildNumber,
-		RevisionNumber uint16
+		Version   uint64
 		Flags     AssemblyFlags
 		PublicKey Blob
 		Name      string

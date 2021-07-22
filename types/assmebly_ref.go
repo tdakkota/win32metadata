@@ -6,10 +6,7 @@ type (
 
 	// AssemblyRef is a II.22.5 AssemblyRef representation.
 	AssemblyRef struct {
-		MajorVersion,
-		MinorVersion,
-		BuildNumber,
-		RevisionNumber uint16
+		Version          uint64
 		Flags            AssemblyFlags
 		PublicKeyOrToken Blob
 		Name             string
