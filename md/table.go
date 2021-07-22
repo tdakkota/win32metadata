@@ -42,8 +42,8 @@ const (
 	ClassLayout TableType = 0x0f
 	// FieldLayout table type.
 	FieldLayout TableType = 0x10
-	// StandaloneSig table type.
-	StandaloneSig TableType = 0x11
+	// StandAloneSig table type.
+	StandAloneSig TableType = 0x11
 	// EventMap table type.
 	EventMap TableType = 0x12
 	// Event table type.

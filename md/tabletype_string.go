@@ -22,7 +22,7 @@ func _() {
 	_ = x[DeclSecurity-14]
 	_ = x[ClassLayout-15]
 	_ = x[FieldLayout-16]
-	_ = x[StandaloneSig-17]
+	_ = x[StandAloneSig-17]
 	_ = x[EventMap-18]
 	_ = x[Event-20]
 	_ = x[PropertyMap-21]
@@ -52,7 +52,7 @@ const (
 	_TableType_name_0 = "ModuleTypeRefTypeDef"
 	_TableType_name_1 = "Field"
 	_TableType_name_2 = "MethodDef"
-	_TableType_name_3 = "ParamInterfaceImplMemberRefConstantCustomAttributeFieldMarshalDeclSecurityClassLayoutFieldLayoutStandaloneSigEventMap"
+	_TableType_name_3 = "ParamInterfaceImplMemberRefConstantCustomAttributeFieldMarshalDeclSecurityClassLayoutFieldLayoutStandAloneSigEventMap"
 	_TableType_name_4 = "EventPropertyMap"
 	_TableType_name_5 = "PropertyMethodSemanticsMethodImplModuleRefTypeSpecImplMapFieldRva"
 	_TableType_name_6 = "AssemblyAssemblyProcessorAssemblyOsAssemblyRefAssemblyRefProcessorAssemblyRefOsFileExportedTypeManifestResourceNestedClassGenericParamMethodSpecGenericParamConstraint"

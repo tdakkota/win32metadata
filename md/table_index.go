@@ -30,7 +30,7 @@ func (h *TablesHeader) computeIndexes() {
 		h.Tables[Module],
 		h.Tables[Property],
 		h.Tables[Event],
-		h.Tables[StandaloneSig],
+		h.Tables[StandAloneSig],
 		h.Tables[ModuleRef],
 		h.Tables[TypeSpec],
 		h.Tables[Assembly],
@@ -127,7 +127,7 @@ func (h *TablesHeader) computeIndexes() {
 	h.Tables[Param].SetRowType([6]uint32{2, 2, stringIndexSize})
 	h.Tables[Property].SetRowType([6]uint32{2, stringIndexSize, blobIndexSize})
 	h.Tables[PropertyMap].SetRowType([6]uint32{h.Tables[TypeDef].IndexSize(), h.Tables[Property].IndexSize()})
-	h.Tables[StandaloneSig].SetRowType([6]uint32{blobIndexSize})
+	h.Tables[StandAloneSig].SetRowType([6]uint32{blobIndexSize})
 	h.Tables[TypeDef].SetRowType([6]uint32{
 		4,
 		stringIndexSize,
