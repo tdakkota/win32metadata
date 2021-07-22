@@ -11,6 +11,6 @@ type (
 		TypeNamespace string
 		Extends       TypeDefOrRef
 		FieldList     List `table:"Field"`
-		MethodList    List `table:"Method"`
+		MethodList    List `table:"MethodDef"`
 	}
 )
