@@ -100,7 +100,7 @@ func getMetadataReader(f *pe.File, header CLIHeader) (*io.SectionReader, error) 
 
 	const STORAGE_MAGIC_SIG = 0x424A_5342
 	if magic != STORAGE_MAGIC_SIG {
-		return nil, fmt.Errorf("invalid magic: %x, expected %x", magic, STORAGE_MAGIC_SIG)
+		return nil, fmt.Errorf("invalid magic: %#x, expected %#x", magic, STORAGE_MAGIC_SIG)
 	}
 
 	return r, nil

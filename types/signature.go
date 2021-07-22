@@ -135,7 +135,7 @@ func (s *SignatureReader) elementType(c *Context) (ElementType, error) {
 	case ELEMENT_TYPE_GENERICINST:
 	}
 
-	return t, fmt.Errorf("unexpected element type %x", value)
+	return t, fmt.Errorf("unexpected element type %#x", value)
 }
 
 func (s *SignatureReader) isConst(c *Context) (bool, error) {
