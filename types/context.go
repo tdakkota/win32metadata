@@ -167,9 +167,7 @@ func (t *Context) ResolveTypeDefOrRefName(ref TypeDefOrRef) (namespace, name str
 	case 1: // TypeRef
 		table = md.TypeRef
 		column = 1
-	case 2: // TypeSpec
-		fallthrough
-	default:
+	default: // TypeSpec, else
 		return "", "", fmt.Errorf("unexpected tag %v", ref)
 	}
 	row := t.Table(table).Row(ref.TableIndex())

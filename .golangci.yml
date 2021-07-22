@@ -109,3 +109,6 @@ issues:
     # There are a lot of Win32 ALL_CAPS-named constants, so ignore this rule.
     - text: "use ALL_CAPS in Go names; use CamelCase"
       linters: [ revive, stylecheck ]
+    # ...and Id instead of ID...
+    - text: "struct field .*Id should be .*ID"
+      linters: [ revive, stylecheck ]
