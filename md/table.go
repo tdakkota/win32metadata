@@ -133,7 +133,7 @@ func (t Table) Find(row, column uint32) uint32 {
 // Uint32 returns numeric value truncated to uint32.
 func (t Table) Uint32(r io.ReaderAt, row, column uint32) (uint32, error) {
 	offset := t.Find(row, column)
-	buf := make([]byte, t.Columns[column].Size, 8)
+	buf := make([]byte, t.Columns[column].Size)
 	if _, err := r.ReadAt(buf, int64(offset)); err != nil {
 		return 0, err
 	}
@@ -147,6 +147,26 @@ func (t Table) Uint32(r io.ReaderAt, row, column uint32) (uint32, error) {
 		return binary.LittleEndian.Uint32(buf), nil
 	default:
 		return uint32(binary.LittleEndian.Uint64(buf)), nil
+	}
+}
+
+// Uint64 returns numeric value truncated to uint64.
+func (t Table) Uint64(r io.ReaderAt, row, column uint32) (uint64, error) {
+	offset := t.Find(row, column)
+	buf := make([]byte, t.Columns[column].Size)
+	if _, err := r.ReadAt(buf, int64(offset)); err != nil {
+		return 0, err
+	}
+
+	switch len(buf) {
+	case 1:
+		return uint64(buf[0]), nil
+	case 2:
+		return uint64(binary.LittleEndian.Uint16(buf)), nil
+	case 4:
+		return uint64(binary.LittleEndian.Uint32(buf)), nil
+	default:
+		return binary.LittleEndian.Uint64(buf), nil
 	}
 }
 

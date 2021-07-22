@@ -44,6 +44,11 @@ func (t *Context) Uint32(tt md.TableType, row, column uint32) (uint32, error) {
 	return t.Tables[tt].Uint32(t.section, row, column)
 }
 
+// Uint64 returns numeric value truncated to uint64.
+func (t *Context) Uint64(tt md.TableType, row, column uint32) (uint64, error) {
+	return t.Tables[tt].Uint64(t.section, row, column)
+}
+
 // String finds string value from #Strings heap using given index column.
 func (t *Context) String(tt md.TableType, row, column uint32) (string, error) {
 	idx, err := t.Uint32(tt, row, column)
@@ -132,6 +137,11 @@ type Row struct {
 // Uint32 returns numeric value truncated to uint32.
 func (t *Row) Uint32(column uint32) (uint32, error) {
 	return t.Table.ctx.Uint32(t.Table.Type, t.Row, column)
+}
+
+// Uint64 returns numeric value truncated to uint64.
+func (t *Row) Uint64(column uint32) (uint64, error) {
+	return t.Table.ctx.Uint64(t.Table.Type, t.Row, column)
 }
 
 // String finds string value from #Strings heap using given index column.
