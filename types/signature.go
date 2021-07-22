@@ -182,26 +182,68 @@ func (s *SignatureReader) NextElement(c *Context) (e Element, _ error) {
 	return
 }
 
-// Parse reads return type and params from Signature blob.
-func (s *SignatureReader) Parse(file *Context) (returnType Element, params []Element, err error) {
-	s.Read()
+// MethodSignature is a II.23.2.1 MethodDefSig representation.
+type MethodSignature struct {
+	Convention uint32
+	Return     Element
+	Params     []Element
+}
+
+// Method reads MethodSignature from Signature blob.
+func (s *SignatureReader) Method(file *Context) (MethodSignature, error) {
+	convention, ok := s.Read()
+	if !ok {
+		return MethodSignature{}, io.ErrUnexpectedEOF
+	}
+
 	count, ok := s.Read()
 	if !ok {
-		return Element{}, nil, io.ErrUnexpectedEOF
+		return MethodSignature{}, io.ErrUnexpectedEOF
 	}
 
-	returnType, err = s.NextElement(file)
+	returnType, err := s.NextElement(file)
 	if err != nil {
-		return Element{}, nil, err
+		return MethodSignature{}, nil
 	}
 
+	params := make([]Element, 0, count)
 	for i := 0; i < int(count); i++ {
 		t, err := s.NextElement(file)
 		if err != nil {
-			return Element{}, nil, err
+			return MethodSignature{}, nil
 		}
 		params = append(params, t)
 	}
 
-	return returnType, params, nil
+	return MethodSignature{
+		Convention: convention,
+		Return:     returnType,
+		Params:     params,
+	}, nil
+}
+
+// FieldSignature is a II.23.2.4 FieldSig representation.
+type FieldSignature struct {
+	Field Element
+}
+
+// Field reads FieldSignature from Signature blob.
+func (s *SignatureReader) Field(file *Context) (FieldSignature, error) {
+	typ, ok := s.Read()
+	if !ok {
+		return FieldSignature{}, io.ErrUnexpectedEOF
+	}
+	if typ != 0x6 {
+		return FieldSignature{}, fmt.Errorf("unexepcted field tpye %d", typ)
+	}
+	s.modifiers()
+
+	e, err := s.NextElement(file)
+	if err != nil {
+		return FieldSignature{}, err
+	}
+
+	return FieldSignature{
+		Field: e,
+	}, nil
 }
