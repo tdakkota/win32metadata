@@ -236,7 +236,6 @@ func (s *SignatureReader) Field(file *Context) (FieldSignature, error) {
 	if typ != 0x6 {
 		return FieldSignature{}, fmt.Errorf("unexepcted field tpye %d", typ)
 	}
-	s.modifiers()
 
 	e, err := s.NextElement(file)
 	if err != nil {
