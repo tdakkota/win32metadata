@@ -1,0 +1,265 @@
+//+build ignore
+
+package main
+
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"go/ast"
+	"go/format"
+	"go/parser"
+	"go/token"
+	"io"
+	"os"
+	"os/signal"
+	"reflect"
+	"strconv"
+	"strings"
+	"text/template"
+
+	"golang.org/x/tools/go/packages"
+)
+
+func generateList() map[string]struct{} {
+	return map[string]struct{}{
+		"Module":                 {},
+		"TypeRef":                {},
+		"TypeDef":                {},
+		"Field":                  {},
+		"MethodDef":              {},
+		"Param":                  {},
+		"InterfaceImpl":          {},
+		"MemberRef":              {},
+		"Constant":               {},
+		"CustomAttribute":        {},
+		"FieldMarshal":           {},
+		"DeclSecurity":           {},
+		"ClassLayout":            {},
+		"FieldLayout":            {},
+		"StandAloneSig":          {},
+		"EventMap":               {},
+		"Event":                  {},
+		"PropertyMap":            {},
+		"Property":               {},
+		"MethodSemantics":        {},
+		"MethodImpl":             {},
+		"ModuleRef":              {},
+		"TypeSpec":               {},
+		"ImplMap":                {},
+		"FieldRva":               {},
+		"Assembly":               {},
+		"AssemblyProcessor":      {},
+		"AssemblyOs":             {},
+		"AssemblyRef":            {},
+		"AssemblyRefProcessor":   {},
+		"AssemblyRefOs":          {},
+		"File":                   {},
+		"ExportedType":           {},
+		"ManifestResource":       {},
+		"NestedClass":            {},
+		"GenericParam":           {},
+		"MethodSpec":             {},
+		"GenericParamConstraint": {},
+	}
+}
+
+func loadPackage(ctx context.Context, pkgName string) (*packages.Package, error) {
+	pkgs, err := packages.Load(&packages.Config{
+		Mode:    packages.NeedSyntax,
+		Context: ctx,
+		Env:     os.Environ(),
+		ParseFile: func(fset *token.FileSet, filename string, src []byte) (*ast.File, error) {
+			const mode = parser.AllErrors | parser.ParseComments
+			return parser.ParseFile(fset, filename, src, mode)
+		},
+	}, pkgName)
+	if err != nil {
+		return nil, fmt.Errorf("load package: %w", err)
+	}
+
+	for _, p := range pkgs {
+		if p.ID == pkgName {
+			return p, nil
+		}
+	}
+	return nil, fmt.Errorf("package %q not found", pkgName)
+}
+
+func printType(node interface{}) (string, error) {
+	b := strings.Builder{}
+	if err := format.Node(&b, token.NewFileSet(), node); err != nil {
+		return "", fmt.Errorf("print type: %w", err)
+	}
+	return b.String(), nil
+}
+
+func collectTargets(pkg *packages.Package) ([]FromRowTarget, error) {
+	toGenerate := generateList()
+
+	var targets []FromRowTarget
+	for _, file := range pkg.Syntax {
+		for _, decl := range file.Decls {
+			gdecl, ok := decl.(*ast.GenDecl)
+			if !ok {
+				continue
+			}
+
+			for _, spec := range gdecl.Specs {
+				typSpec, ok := spec.(*ast.TypeSpec)
+				if !ok {
+					continue
+				}
+
+				if _, ok := toGenerate[typSpec.Name.Name]; !ok {
+					continue
+				}
+
+				st, ok := typSpec.Type.(*ast.StructType)
+				if !ok {
+					continue
+				}
+
+				target := FromRowTarget{
+					Name: typSpec.Name.Name,
+				}
+				for i, field := range st.Fields.List {
+					if len(field.Names) != 1 {
+						return nil, fmt.Errorf(
+							"invalid declaration at %q type, field #%d: must be only one name per row",
+							typSpec.Name.Name, i,
+						)
+					}
+
+					typeName, err := printType(field.Type)
+					if err != nil {
+						return nil, err
+					}
+
+					var function string
+					switch typeName {
+					case "string":
+						function = "String"
+					case "Blob", "Signature", "List":
+						function = typeName
+					default:
+						function = "Uint64"
+					}
+
+					var index string
+					if field.Tag != nil {
+						v, err := strconv.Unquote(field.Tag.Value)
+						if err != nil {
+							return nil, fmt.Errorf("invalid tag: %w", err)
+						}
+
+						tag := reflect.StructTag(v)
+						indexName, ok := tag.Lookup("table")
+						if !ok {
+							return nil, fmt.Errorf("invalid tag: %s", tag)
+						}
+						index = indexName
+					}
+
+					target.Columns = append(target.Columns, Column{
+						Name:     field.Names[0].Name,
+						TypeName: typeName,
+						Function: function,
+						Index:    index,
+					})
+				}
+				targets = append(targets, target)
+			}
+		}
+	}
+
+	return targets, nil
+}
+
+type FromRowTarget struct {
+	Name    string
+	Columns []Column
+}
+
+type Column struct {
+	Name     string
+	TypeName string
+	Function string
+	Index    string
+}
+
+type Config struct {
+	Targets []FromRowTarget
+}
+
+const generateTemplate = `package types
+import (
+	"fmt"
+
+	"github.com/tdakkota/win32metadata/md"
+)
+
+{{ range $target := .Targets -}}
+{{ template "from_row" $target }}
+{{ end -}}
+
+{{ define "from_row" -}}  
+// FromRow creates {{ $.Name }} from given Row.
+func (f *{{ $.Name }}) FromRow(r Row) error {
+	{{- range $i, $column := $.Columns }}
+	{
+		{{- if eq $column.Function "List" }}
+		v, err := r.{{ $column.Function }}({{ $i }}, md.{{ $column.Index }})
+		{{- else }}
+		v, err := r.{{ $column.Function }}({{ $i }})
+		{{- end }}
+		if err != nil {
+			return fmt.Errorf("decode field {{ $column.Name }}: %w", err)
+		}
+		f.{{ $column.Name }} = {{ $column.TypeName }}(v)
+	}
+	{{- end }}
+	return nil
+}
+{{- end -}}
+`
+
+func run(ctx context.Context) error {
+	const pkgName = "github.com/tdakkota/win32metadata/types"
+	pkg, err := loadPackage(ctx, pkgName)
+	if err != nil {
+		return err
+	}
+
+	targets, err := collectTargets(pkg)
+	if err != nil {
+		return err
+	}
+
+	out := &bytes.Buffer{}
+
+	t := template.Must(template.New("gen").Parse(generateTemplate))
+	if err := t.Execute(out, Config{
+		Targets: targets,
+	}); err != nil {
+		return fmt.Errorf("generate: %w", err)
+	}
+
+	formatted, err := format.Source(out.Bytes())
+	if err != nil {
+		io.Copy(os.Stderr, out)
+		return fmt.Errorf("format: %w", err)
+	}
+
+	return os.WriteFile("from_row.gen.go", formatted, 0o600)
+}
+
+func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	if err := run(ctx); err != nil {
+		fmt.Println(err)
+		return
+	}
+}
