@@ -261,7 +261,7 @@ var _ fmt.Stringer
 		return fmt.Errorf("format: %w", err)
 	}
 
-	return os.WriteFile("composite_index.go", formatted, 0o600)
+	return os.WriteFile("composite_index.gen.go", formatted, 0o600)
 }
 
 func main() {
