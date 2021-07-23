@@ -54,6 +54,32 @@ func (f *Assembly) FromRow(r Row) error {
 	return nil
 }
 
+// FromRow creates AssemblyOS from given Row.
+func (f *AssemblyOS) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field OSPlatformID: %w", err)
+		}
+		f.OSPlatformID = uint32(v)
+	}
+	{
+		v, err := r.Uint64(1)
+		if err != nil {
+			return fmt.Errorf("decode field OSMajorVersion: %w", err)
+		}
+		f.OSMajorVersion = uint32(v)
+	}
+	{
+		v, err := r.Uint64(2)
+		if err != nil {
+			return fmt.Errorf("decode field OSMinorVersion: %w", err)
+		}
+		f.OSMinorVersion = uint32(v)
+	}
+	return nil
+}
+
 // FromRow creates AssemblyProcessor from given Row.
 func (f *AssemblyProcessor) FromRow(r Row) error {
 	{
@@ -62,6 +88,39 @@ func (f *AssemblyProcessor) FromRow(r Row) error {
 			return fmt.Errorf("decode field Processor: %w", err)
 		}
 		f.Processor = uint32(v)
+	}
+	return nil
+}
+
+// FromRow creates AssemblyRefOS from given Row.
+func (f *AssemblyRefOS) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field OSPlatformID: %w", err)
+		}
+		f.OSPlatformID = uint32(v)
+	}
+	{
+		v, err := r.Uint64(1)
+		if err != nil {
+			return fmt.Errorf("decode field OSMajorVersion: %w", err)
+		}
+		f.OSMajorVersion = uint32(v)
+	}
+	{
+		v, err := r.Uint64(2)
+		if err != nil {
+			return fmt.Errorf("decode field OSMinorVersion: %w", err)
+		}
+		f.OSMinorVersion = uint32(v)
+	}
+	{
+		v, err := r.Uint64(3)
+		if err != nil {
+			return fmt.Errorf("decode field AssemblyRef: %w", err)
+		}
+		f.AssemblyRef = Index(v)
 	}
 	return nil
 }
@@ -381,6 +440,25 @@ func (f *FieldMarshal) FromRow(r Row) error {
 			return fmt.Errorf("decode field NativeType: %w", err)
 		}
 		f.NativeType = Blob(v)
+	}
+	return nil
+}
+
+// FromRow creates FieldRVA from given Row.
+func (f *FieldRVA) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field RVA: %w", err)
+		}
+		f.RVA = uint32(v)
+	}
+	{
+		v, err := r.Uint64(1)
+		if err != nil {
+			return fmt.Errorf("decode field Field: %w", err)
+		}
+		f.Field = Index(v)
 	}
 	return nil
 }
