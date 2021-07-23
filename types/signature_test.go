@@ -56,7 +56,7 @@ func TestSignatureReader_Method(t *testing.T) {
 				17, 131, 221, // First param definition (ELEMENT_TYPE_VALUETYPE + TypeDefOrRef index)
 			},
 			MethodSignature{
-				Convention: DefaultCallingConvention,
+				Flags: 0,
 				Return: Element{
 					Type: ElementType{Kind: ELEMENT_TYPE_U4},
 				},
@@ -80,7 +80,7 @@ func TestSignatureReader_Method(t *testing.T) {
 				17, 131, 229, // DWORD
 			},
 			MethodSignature{
-				Convention: DefaultCallingConvention,
+				Flags: 0,
 				Return: Element{
 					Type: BOOL,
 				},
@@ -109,7 +109,7 @@ func TestSignatureReader_Method(t *testing.T) {
 				15, 9, // *uint32
 			},
 			MethodSignature{
-				Convention: DefaultCallingConvention,
+				Flags: 0,
 				Return: Element{
 					Type: NTSTATUS,
 				},
@@ -133,7 +133,7 @@ func TestSignatureReader_Method(t *testing.T) {
 				18, 187, 181, // Argument is a class IPropertySet
 			},
 			MethodSignature{
-				Convention: HasThisCallingConvention,
+				Flags: 32,
 				Return: Element{Type: ElementType{
 					Kind: ELEMENT_TYPE_GENERICINST,
 					TypeDef: ElementTypeTypeDef{
@@ -154,7 +154,7 @@ func TestSignatureReader_Method(t *testing.T) {
 				18, 151, 189, // ELEMENT_TYPE_CLASS ResourceCandidate
 			},
 			MethodSignature{
-				Convention: HasThisCallingConvention,
+				Flags: 32,
 				Return: Element{
 					Type: ElementType{Kind: ELEMENT_TYPE_U4},
 				},
