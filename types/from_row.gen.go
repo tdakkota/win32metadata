@@ -125,6 +125,16 @@ func (f *AssemblyRefOS) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveAssemblyRef resolves AssemblyRef index using given Context.
+func (f *AssemblyRefOS) ResolveAssemblyRef(c *Context) (AssemblyRef, error) {
+	table := c.Table(md.AssemblyRef)
+	var t AssemblyRef
+	if err := t.FromRow(table.Row(uint32(f.AssemblyRef))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 // FromRow creates AssemblyRefProcessor from given Row.
 func (f *AssemblyRefProcessor) FromRow(r Row) error {
 	{
@@ -142,6 +152,16 @@ func (f *AssemblyRefProcessor) FromRow(r Row) error {
 		f.AssemblyRef = Index(v)
 	}
 	return nil
+}
+
+// ResolveAssemblyRef resolves AssemblyRef index using given Context.
+func (f *AssemblyRefProcessor) ResolveAssemblyRef(c *Context) (AssemblyRef, error) {
+	table := c.Table(md.AssemblyRef)
+	var t AssemblyRef
+	if err := t.FromRow(table.Row(uint32(f.AssemblyRef))); err != nil {
+		return t, err
+	}
+	return t, nil
 }
 
 // FromRow creates AssemblyRef from given Row.
@@ -215,6 +235,16 @@ func (f *ClassLayout) FromRow(r Row) error {
 		f.Parent = Index(v)
 	}
 	return nil
+}
+
+// ResolveParent resolves Parent index using given Context.
+func (f *ClassLayout) ResolveParent(c *Context) (TypeDef, error) {
+	table := c.Table(md.TypeDef)
+	var t TypeDef
+	if err := t.FromRow(table.Row(uint32(f.Parent))); err != nil {
+		return t, err
+	}
+	return t, nil
 }
 
 // FromRow creates Constant from given Row.
@@ -340,6 +370,37 @@ func (f *EventMap) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveParent resolves Parent index using given Context.
+func (f *EventMap) ResolveParent(c *Context) (TypeDef, error) {
+	table := c.Table(md.TypeDef)
+	var t TypeDef
+	if err := t.FromRow(table.Row(uint32(f.Parent))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
+// ResolveEventList resolves EventList index using given Context.
+func (f *EventMap) ResolveEventList(c *Context) ([]Event, error) {
+	table := c.Table(md.Event)
+	if f.EventList.Empty() {
+		return nil, nil
+	}
+
+	var (
+		t      Event
+		result = make([]Event, 0, f.EventList.Size())
+	)
+	for i := f.EventList.Start(); i < f.EventList.End(); i++ {
+		if err := t.FromRow(table.Row(i)); err != nil {
+			return result, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
+}
+
 // FromRow creates ExportedType from given Row.
 func (f *ExportedType) FromRow(r Row) error {
 	{
@@ -425,6 +486,16 @@ func (f *FieldLayout) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveField resolves Field index using given Context.
+func (f *FieldLayout) ResolveField(c *Context) (Field, error) {
+	table := c.Table(md.Field)
+	var t Field
+	if err := t.FromRow(table.Row(uint32(f.Field))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 // FromRow creates FieldMarshal from given Row.
 func (f *FieldMarshal) FromRow(r Row) error {
 	{
@@ -461,6 +532,16 @@ func (f *FieldRVA) FromRow(r Row) error {
 		f.Field = Index(v)
 	}
 	return nil
+}
+
+// ResolveField resolves Field index using given Context.
+func (f *FieldRVA) ResolveField(c *Context) (Field, error) {
+	table := c.Table(md.Field)
+	var t Field
+	if err := t.FromRow(table.Row(uint32(f.Field))); err != nil {
+		return t, err
+	}
+	return t, nil
 }
 
 // FromRow creates File from given Row.
@@ -541,6 +622,16 @@ func (f *GenericParamConstraint) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveOwner resolves Owner index using given Context.
+func (f *GenericParamConstraint) ResolveOwner(c *Context) (GenericParam, error) {
+	table := c.Table(md.GenericParam)
+	var t GenericParam
+	if err := t.FromRow(table.Row(uint32(f.Owner))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 // FromRow creates ImplMap from given Row.
 func (f *ImplMap) FromRow(r Row) error {
 	{
@@ -574,6 +665,16 @@ func (f *ImplMap) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveImportScope resolves ImportScope index using given Context.
+func (f *ImplMap) ResolveImportScope(c *Context) (ModuleRef, error) {
+	table := c.Table(md.ModuleRef)
+	var t ModuleRef
+	if err := t.FromRow(table.Row(uint32(f.ImportScope))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 // FromRow creates InterfaceImpl from given Row.
 func (f *InterfaceImpl) FromRow(r Row) error {
 	{
@@ -591,6 +692,16 @@ func (f *InterfaceImpl) FromRow(r Row) error {
 		f.Interface = TypeDefOrRef(v)
 	}
 	return nil
+}
+
+// ResolveClass resolves Class index using given Context.
+func (f *InterfaceImpl) ResolveClass(c *Context) (TypeDef, error) {
+	table := c.Table(md.TypeDef)
+	var t TypeDef
+	if err := t.FromRow(table.Row(uint32(f.Class))); err != nil {
+		return t, err
+	}
+	return t, nil
 }
 
 // FromRow creates ManifestResource from given Row.
@@ -699,6 +810,27 @@ func (f *MethodDef) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveParamList resolves ParamList index using given Context.
+func (f *MethodDef) ResolveParamList(c *Context) ([]Param, error) {
+	table := c.Table(md.Param)
+	if f.ParamList.Empty() {
+		return nil, nil
+	}
+
+	var (
+		t      Param
+		result = make([]Param, 0, f.ParamList.Size())
+	)
+	for i := f.ParamList.Start(); i < f.ParamList.End(); i++ {
+		if err := t.FromRow(table.Row(i)); err != nil {
+			return result, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
+}
+
 // FromRow creates MethodImpl from given Row.
 func (f *MethodImpl) FromRow(r Row) error {
 	{
@@ -725,6 +857,16 @@ func (f *MethodImpl) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveClass resolves Class index using given Context.
+func (f *MethodImpl) ResolveClass(c *Context) (TypeDef, error) {
+	table := c.Table(md.TypeDef)
+	var t TypeDef
+	if err := t.FromRow(table.Row(uint32(f.Class))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 // FromRow creates MethodSemantics from given Row.
 func (f *MethodSemantics) FromRow(r Row) error {
 	{
@@ -749,6 +891,16 @@ func (f *MethodSemantics) FromRow(r Row) error {
 		f.Association = HasSemantics(v)
 	}
 	return nil
+}
+
+// ResolveMethod resolves Method index using given Context.
+func (f *MethodSemantics) ResolveMethod(c *Context) (MethodDef, error) {
+	table := c.Table(md.MethodDef)
+	var t MethodDef
+	if err := t.FromRow(table.Row(uint32(f.Method))); err != nil {
+		return t, err
+	}
+	return t, nil
 }
 
 // FromRow creates MethodSpec from given Row.
@@ -841,6 +993,26 @@ func (f *NestedClass) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveNestedClass resolves NestedClass index using given Context.
+func (f *NestedClass) ResolveNestedClass(c *Context) (TypeDef, error) {
+	table := c.Table(md.TypeDef)
+	var t TypeDef
+	if err := t.FromRow(table.Row(uint32(f.NestedClass))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
+// ResolveEnclosingClass resolves EnclosingClass index using given Context.
+func (f *NestedClass) ResolveEnclosingClass(c *Context) (TypeDef, error) {
+	table := c.Table(md.TypeDef)
+	var t TypeDef
+	if err := t.FromRow(table.Row(uint32(f.EnclosingClass))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 // FromRow creates Param from given Row.
 func (f *Param) FromRow(r Row) error {
 	{
@@ -912,6 +1084,37 @@ func (f *PropertyMap) FromRow(r Row) error {
 	return nil
 }
 
+// ResolveParent resolves Parent index using given Context.
+func (f *PropertyMap) ResolveParent(c *Context) (TypeDef, error) {
+	table := c.Table(md.TypeDef)
+	var t TypeDef
+	if err := t.FromRow(table.Row(uint32(f.Parent))); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
+// ResolvePropertyList resolves PropertyList index using given Context.
+func (f *PropertyMap) ResolvePropertyList(c *Context) ([]Property, error) {
+	table := c.Table(md.Property)
+	if f.PropertyList.Empty() {
+		return nil, nil
+	}
+
+	var (
+		t      Property
+		result = make([]Property, 0, f.PropertyList.Size())
+	)
+	for i := f.PropertyList.Start(); i < f.PropertyList.End(); i++ {
+		if err := t.FromRow(table.Row(i)); err != nil {
+			return result, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
+}
+
 // FromRow creates TypeDef from given Row.
 func (f *TypeDef) FromRow(r Row) error {
 	{
@@ -957,6 +1160,48 @@ func (f *TypeDef) FromRow(r Row) error {
 		f.MethodList = List(v)
 	}
 	return nil
+}
+
+// ResolveFieldList resolves FieldList index using given Context.
+func (f *TypeDef) ResolveFieldList(c *Context) ([]Field, error) {
+	table := c.Table(md.Field)
+	if f.FieldList.Empty() {
+		return nil, nil
+	}
+
+	var (
+		t      Field
+		result = make([]Field, 0, f.FieldList.Size())
+	)
+	for i := f.FieldList.Start(); i < f.FieldList.End(); i++ {
+		if err := t.FromRow(table.Row(i)); err != nil {
+			return result, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
+}
+
+// ResolveMethodList resolves MethodList index using given Context.
+func (f *TypeDef) ResolveMethodList(c *Context) ([]MethodDef, error) {
+	table := c.Table(md.MethodDef)
+	if f.MethodList.Empty() {
+		return nil, nil
+	}
+
+	var (
+		t      MethodDef
+		result = make([]MethodDef, 0, f.MethodList.Size())
+	)
+	for i := f.MethodList.Start(); i < f.MethodList.End(); i++ {
+		if err := t.FromRow(table.Row(i)); err != nil {
+			return result, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
 }
 
 // FromRow creates TypeRef from given Row.

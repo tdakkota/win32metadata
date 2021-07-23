@@ -202,6 +202,7 @@ import (
 
 {{ range $target := .Targets -}}
 {{ template "from_row" $target }}
+{{ template "resolve" $target }}
 {{ end -}}
 
 {{ define "from_row" -}}  
@@ -222,6 +223,46 @@ func (f *{{ $.Name }}) FromRow(r Row) error {
 	{{- end }}
 	return nil
 }
+{{ end }}
+
+{{ define "resolve_result" -}}
+{{ if eq .Function "List" }}[]{{ end }}{{ .Index }}
+{{- end }}
+
+{{ define "resolve" }}
+
+{{- range $column := $.Columns }}{{ if $column.Index }}
+// Resolve{{ $column.Name }} resolves {{ $column.Name }} index using given Context.
+func (f *{{ $.Name }}) Resolve{{ $column.Name }}(c *Context) ({{ template "resolve_result" $column }}, error) {
+	table := c.Table(md.{{ $column.Index }})
+
+	{{- if eq $column.Function "List" }}
+	if f.{{ $column.Name }}.Empty() {
+		return nil, nil
+	}
+
+	var (
+		t {{ $column.Index }}
+		result = make([]{{ $column.Index }}, 0, f.{{ $column.Name }}.Size())
+	)
+	for i := f.{{ $column.Name }}.Start(); i < f.{{ $column.Name }}.End(); i++ {
+		if err := t.FromRow(table.Row(i)); err != nil {
+			return result, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
+	{{- else }}
+	var t {{ $column.Index }}
+	if err := t.FromRow(table.Row(uint32(f.{{ $column.Name }}))); err != nil {
+		return t, err
+	}
+	return t, nil
+	{{- end }}
+}
+{{ end }}{{ end -}}
+
 {{ end }}
 `
 
