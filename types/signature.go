@@ -250,13 +250,16 @@ func (s *SignatureReader) Method(file *Context) (MethodSignature, error) {
 		return MethodSignature{}, nil
 	}
 
-	params := make([]Element, 0, count)
-	for i := 0; i < int(count); i++ {
-		t, err := s.NextElement(file)
-		if err != nil {
-			return MethodSignature{}, nil
+	var params []Element
+	if count > 0 {
+		params = make([]Element, 0, count)
+		for i := 0; i < int(count); i++ {
+			t, err := s.NextElement(file)
+			if err != nil {
+				return MethodSignature{}, nil
+			}
+			params = append(params, t)
 		}
-		params = append(params, t)
 	}
 
 	return MethodSignature{
