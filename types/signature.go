@@ -214,27 +214,16 @@ func (s *SignatureReader) NextElement(c *Context) (e Element, _ error) {
 	return
 }
 
-// CallingConvention describes II.23.2.1 MethodDefSig calling convention.
-type CallingConvention uint32
-
-const (
-	HasThisCallingConvention      CallingConvention = 0x20
-	ExplicitThisCallingConvention CallingConvention = 0x40
-	DefaultCallingConvention      CallingConvention = 0x0
-	VarArgCallingConvention       CallingConvention = 0x5
-	GenericCallingConvention      CallingConvention = 0x10
-)
-
-// MethodSignature is a II.23.2.1 MethodDefSig representation.
+// MethodSignature is a II.23.2.1 MethodDefSig or II.23.2.2 MethodRefSig representation.
 type MethodSignature struct {
-	Convention CallingConvention
-	Return     Element
-	Params     []Element
+	Flags  uint32
+	Return Element
+	Params []Element
 }
 
 // Method reads MethodSignature from Signature blob.
 func (s *SignatureReader) Method(file *Context) (MethodSignature, error) {
-	convention, ok := s.Read()
+	flags, ok := s.Read()
 	if !ok {
 		return MethodSignature{}, io.ErrUnexpectedEOF
 	}
@@ -262,9 +251,9 @@ func (s *SignatureReader) Method(file *Context) (MethodSignature, error) {
 	}
 
 	return MethodSignature{
-		Convention: CallingConvention(convention),
-		Return:     returnType,
-		Params:     params,
+		Flags:  flags,
+		Return: returnType,
+		Params: params,
 	}, nil
 }
 
