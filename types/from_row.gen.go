@@ -281,6 +281,46 @@ func (f *EventMap) FromRow(r Row) error {
 	return nil
 }
 
+// FromRow creates ExportedType from given Row.
+func (f *ExportedType) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field Flags: %w", err)
+		}
+		f.Flags = TypeAttributes(v)
+	}
+	{
+		v, err := r.Uint64(1)
+		if err != nil {
+			return fmt.Errorf("decode field TypeDefId: %w", err)
+		}
+		f.TypeDefId = uint32(v)
+	}
+	{
+		v, err := r.String(2)
+		if err != nil {
+			return fmt.Errorf("decode field TypeName: %w", err)
+		}
+		f.TypeName = string(v)
+	}
+	{
+		v, err := r.String(3)
+		if err != nil {
+			return fmt.Errorf("decode field TypeNamespace: %w", err)
+		}
+		f.TypeNamespace = string(v)
+	}
+	{
+		v, err := r.Uint64(4)
+		if err != nil {
+			return fmt.Errorf("decode field Implementation: %w", err)
+		}
+		f.Implementation = Implementation(v)
+	}
+	return nil
+}
+
 // FromRow creates Field from given Row.
 func (f *Field) FromRow(r Row) error {
 	{
@@ -322,6 +362,51 @@ func (f *FieldLayout) FromRow(r Row) error {
 			return fmt.Errorf("decode field Field: %w", err)
 		}
 		f.Field = Index(v)
+	}
+	return nil
+}
+
+// FromRow creates FieldMarshal from given Row.
+func (f *FieldMarshal) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field Parent: %w", err)
+		}
+		f.Parent = Index(v)
+	}
+	{
+		v, err := r.Blob(1)
+		if err != nil {
+			return fmt.Errorf("decode field NativeType: %w", err)
+		}
+		f.NativeType = Blob(v)
+	}
+	return nil
+}
+
+// FromRow creates File from given Row.
+func (f *File) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field Flags: %w", err)
+		}
+		f.Flags = FileAttributes(v)
+	}
+	{
+		v, err := r.String(1)
+		if err != nil {
+			return fmt.Errorf("decode field Name: %w", err)
+		}
+		f.Name = string(v)
+	}
+	{
+		v, err := r.Blob(2)
+		if err != nil {
+			return fmt.Errorf("decode field HashValue: %w", err)
+		}
+		f.HashValue = Blob(v)
 	}
 	return nil
 }
@@ -430,6 +515,39 @@ func (f *InterfaceImpl) FromRow(r Row) error {
 	return nil
 }
 
+// FromRow creates ManifestResource from given Row.
+func (f *ManifestResource) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field Offset: %w", err)
+		}
+		f.Offset = uint32(v)
+	}
+	{
+		v, err := r.Uint64(1)
+		if err != nil {
+			return fmt.Errorf("decode field Flags: %w", err)
+		}
+		f.Flags = ManifestResourceAttributes(v)
+	}
+	{
+		v, err := r.String(2)
+		if err != nil {
+			return fmt.Errorf("decode field Name: %w", err)
+		}
+		f.Name = string(v)
+	}
+	{
+		v, err := r.Uint64(3)
+		if err != nil {
+			return fmt.Errorf("decode field Implementation: %w", err)
+		}
+		f.Implementation = Implementation(v)
+	}
+	return nil
+}
+
 // FromRow creates MemberRef from given Row.
 func (f *MemberRef) FromRow(r Row) error {
 	{
@@ -499,6 +617,58 @@ func (f *MethodDef) FromRow(r Row) error {
 			return fmt.Errorf("decode field ParamList: %w", err)
 		}
 		f.ParamList = List(v)
+	}
+	return nil
+}
+
+// FromRow creates MethodImpl from given Row.
+func (f *MethodImpl) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field Class: %w", err)
+		}
+		f.Class = Index(v)
+	}
+	{
+		v, err := r.Uint64(1)
+		if err != nil {
+			return fmt.Errorf("decode field MethodBody: %w", err)
+		}
+		f.MethodBody = MethodDefOrRef(v)
+	}
+	{
+		v, err := r.Uint64(2)
+		if err != nil {
+			return fmt.Errorf("decode field MethodDeclaration: %w", err)
+		}
+		f.MethodDeclaration = MethodDefOrRef(v)
+	}
+	return nil
+}
+
+// FromRow creates MethodSemantics from given Row.
+func (f *MethodSemantics) FromRow(r Row) error {
+	{
+		v, err := r.Uint64(0)
+		if err != nil {
+			return fmt.Errorf("decode field Semantics: %w", err)
+		}
+		f.Semantics = MethodSemanticsAttributes(v)
+	}
+	{
+		v, err := r.Uint64(1)
+		if err != nil {
+			return fmt.Errorf("decode field Method: %w", err)
+		}
+		f.Method = Index(v)
+	}
+	{
+		v, err := r.Uint64(2)
+		if err != nil {
+			return fmt.Errorf("decode field Association: %w", err)
+		}
+		f.Association = HasSemantics(v)
 	}
 	return nil
 }
