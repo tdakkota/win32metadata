@@ -30,6 +30,16 @@ func TestSignatureReader_Method(t *testing.T) {
 			Kind:    ELEMENT_TYPE_VALUETYPE,
 			TypeDef: ElementTypeTypeDef{Index: TypeDefOrRef(4905)},
 		}
+		IPropertySet = ElementType{
+			Kind:    ELEMENT_TYPE_CLASS,
+			TypeDef: ElementTypeTypeDef{Index: 15285},
+		}
+		ResourceCandidate = ElementType{
+			Kind: ELEMENT_TYPE_CLASS,
+			TypeDef: ElementTypeTypeDef{
+				Index: 6077,
+			},
+		}
 	)
 
 	tests := []struct {
@@ -46,7 +56,7 @@ func TestSignatureReader_Method(t *testing.T) {
 				17, 131, 221, // First param definition (ELEMENT_TYPE_VALUETYPE + TypeDefOrRef index)
 			},
 			MethodSignature{
-				Convention: 0,
+				Convention: DefaultCallingConvention,
 				Return: Element{
 					Type: ElementType{Kind: ELEMENT_TYPE_U4},
 				},
@@ -70,7 +80,7 @@ func TestSignatureReader_Method(t *testing.T) {
 				17, 131, 229, // DWORD
 			},
 			MethodSignature{
-				Convention: 0,
+				Convention: DefaultCallingConvention,
 				Return: Element{
 					Type: BOOL,
 				},
@@ -99,7 +109,7 @@ func TestSignatureReader_Method(t *testing.T) {
 				15, 9, // *uint32
 			},
 			MethodSignature{
-				Convention: 0,
+				Convention: DefaultCallingConvention,
 				Return: Element{
 					Type: NTSTATUS,
 				},
@@ -110,6 +120,54 @@ func TestSignatureReader_Method(t *testing.T) {
 					{Type: ElementType{Kind: ELEMENT_TYPE_VOID}, Pointers: 1},
 					{Type: ElementType{Kind: ELEMENT_TYPE_U4}, Pointers: 1},
 					{Type: ElementType{Kind: ELEMENT_TYPE_U4}, Pointers: 1},
+				},
+			},
+		},
+		{
+			"AppExtension.GetExtensionPropertiesAsync",
+			Signature{
+				32,               // HASTHIS calling convention, see II.23.2.1 MethodDefSig
+				0,                // No parameters
+				21, 18, 188, 181, // Generic result type IAsyncOperation
+				1,            // One generic argument
+				18, 187, 181, // Argument is a class IPropertySet
+			},
+			MethodSignature{
+				Convention: HasThisCallingConvention,
+				Return: Element{Type: ElementType{
+					Kind: ELEMENT_TYPE_GENERICINST,
+					TypeDef: ElementTypeTypeDef{
+						Index:    15541,
+						Generics: []ElementType{IPropertySet},
+					},
+				}},
+			},
+		},
+		{
+			"ResourceCandidateVectorView.GetMany",
+			Signature{
+				32,
+				2,
+				9,
+				9,
+				29,           // SZARRAY argument of
+				18, 151, 189, // ELEMENT_TYPE_CLASS ResourceCandidate
+			},
+			MethodSignature{
+				Convention: HasThisCallingConvention,
+				Return: Element{
+					Type: ElementType{Kind: ELEMENT_TYPE_U4},
+				},
+				Params: []Element{
+					{Type: ElementType{Kind: ELEMENT_TYPE_U4}},
+					{
+						Type: ElementType{
+							Kind: ELEMENT_TYPE_SZARRAY,
+							SZArray: ElementTypeSZArray{Elem: &Element{
+								Type: ResourceCandidate,
+							}},
+						},
+					},
 				},
 			},
 		},
