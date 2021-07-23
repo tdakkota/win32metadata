@@ -7,8 +7,8 @@ import (
 )
 
 func TestSignatureReader_Method(t *testing.T) {
-	// From Windows.Win32.winmd, may be various depending on file
-	// Does not matter for testing purposes.
+	// TypeDefOrRef may be various depending on file, but it
+	// does not matter for testing purposes.
 	var (
 		NTSTATUS = ElementType{
 			Kind:    ELEMENT_TYPE_VALUETYPE,
@@ -178,6 +178,54 @@ func TestSignatureReader_Method(t *testing.T) {
 			r := test.sig.Reader()
 
 			method, err := r.Method(nil) // Context must not be needed anyway
+			a.NoError(err)
+
+			a.Equal(test.expect, method)
+		})
+	}
+}
+
+func TestSignatureReader_Field(t *testing.T) {
+	tests := []struct {
+		name   string
+		sig    Signature
+		expect FieldSignature
+	}{
+		{
+			// CONSOLE_MODE is a enum, value__ is a enum value.
+			"CONSOLE_MODE.value__",
+			Signature{
+				6, // Denotes that signature is a field type.
+				9, // uint32
+			},
+			FieldSignature{Field: Element{
+				Type: ElementType{Kind: ELEMENT_TYPE_U4},
+			}},
+		},
+		{
+			// CONSOLE_MODE is a enum, ENABLE_LINE_INPUT is a associated value.
+			"CONSOLE_MODE.ENABLE_LINE_INPUT",
+			Signature{
+				6,  // Denotes that signature is a field type.
+				17, // ELEMENT_TYPE_VALUETYPE
+				5,  // TypeDefOrRef index
+			},
+			FieldSignature{Field: Element{
+				Type: ElementType{
+					Kind: ELEMENT_TYPE_VALUETYPE,
+					TypeDef: ElementTypeTypeDef{
+						Index: 5,
+					},
+				},
+			}},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			a := require.New(t)
+			r := test.sig.Reader()
+
+			method, err := r.Field(nil) // Context must not be needed anyway
 			a.NoError(err)
 
 			a.Equal(test.expect, method)
