@@ -84,6 +84,11 @@ type ElementTypeArray struct {
 	Size uint32
 }
 
+// ElementTypeSZArray is a ElementType union variant structure.
+type ElementTypeSZArray struct {
+	Elem *Element
+}
+
 // ElementTypeTypeDef is a ElementType union variant structure.
 type ElementTypeTypeDef struct {
 	Index    TypeDefOrRef
@@ -96,6 +101,7 @@ type ElementType struct {
 	Kind         ElementTypeKind
 	GenericParam Index `table:"GenericParam"`
 	Array        ElementTypeArray
+	SZArray      ElementTypeSZArray
 	MethodDef    Index `table:"MethodDef"`
 	Field        Index `table:"Field"`
 	TypeDef      ElementTypeTypeDef

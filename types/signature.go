@@ -161,9 +161,8 @@ func (s *SignatureReader) elementType(c *Context) (ElementType, error) {
 			return ElementType{}, err
 		}
 
-		t.Array = ElementTypeArray{
+		t.SZArray = ElementTypeSZArray{
 			Elem: &elem,
-			Size: 0,
 		}
 		return t, nil
 	}
