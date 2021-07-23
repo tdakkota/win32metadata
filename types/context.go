@@ -35,8 +35,8 @@ func FromPE(f *pe.File) (*Context, error) {
 }
 
 // RowCount returns row count of given table type.
-func (t *Context) RowCount(tt md.TableType) int {
-	return int(t.Tables[tt].RowCount)
+func (t *Context) RowCount(tt md.TableType) uint32 {
+	return t.Tables[tt].RowCount
 }
 
 // Uint32 returns numeric value truncated to uint32.
@@ -114,7 +114,7 @@ type Table struct {
 }
 
 // RowCount returns row count of this table.
-func (t Table) RowCount() int {
+func (t Table) RowCount() uint32 {
 	return t.ctx.RowCount(t.Type)
 }
 
