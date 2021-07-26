@@ -98,13 +98,13 @@ func TestMetadata_Tables(t *testing.T) {
 
 		field := tables[Field]
 		for i, name := range fields {
-			idx, err := field.Uint32(section, uint32(i), 1)
+			idx, err := field.Uint64(section, uint32(i), 1)
 			a.NoError(err)
 			fieldName, err := file.ReadString(idx)
 			a.NoError(err)
 			a.Equal(name, fieldName)
 
-			sig, err := field.Uint32(section, uint32(i), 2)
+			sig, err := field.Uint64(section, uint32(i), 2)
 			a.NoError(err)
 			blob, err := file.ReadBlob(sig)
 			a.NoError(err)
