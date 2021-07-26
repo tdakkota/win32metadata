@@ -19,6 +19,7 @@ func queueTypeDefs(
 	if ok {
 		return def.TypeNamespace, def.TypeName, nil
 	}
+
 	d, err := resolveTypeDef(c, idx)
 	if err != nil {
 		return "", "", err
@@ -168,17 +169,19 @@ func printName(
 		}
 		name += ">"
 	case types.ELEMENT_TYPE_ARRAY:
-		_, elemName, err := printName(c, *e.Type.Array.Elem, toPrint)
+		ns, elemName, err := printName(c, *e.Type.Array.Elem, toPrint)
 		if err != nil {
 			return "", "", err
 		}
 		name = fmt.Sprintf("%s[%d]", elemName, e.Type.Array.Size)
+		namespace = ns
 	case types.ELEMENT_TYPE_SZARRAY:
-		_, elemName, err := printName(c, *e.Type.SZArray.Elem, toPrint)
+		ns, elemName, err := printName(c, *e.Type.SZArray.Elem, toPrint)
 		if err != nil {
 			return "", "", err
 		}
 		name = elemName + "[]"
+		namespace = ns
 	default:
 		return "", "", fmt.Errorf("unexpected type %v", e.Type)
 	}

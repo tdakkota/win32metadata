@@ -11,20 +11,22 @@ import (
 	"github.com/tdakkota/win32metadata/types"
 )
 
-func run(ctx context.Context) error {
+func run(context.Context) error {
 	fileName := flag.String("file", "", "path to metadata file")
 	methodName := flag.String("method", "", "method to print")
 	flag.Parse()
 
 	if *methodName == "" {
-		return fmt.Errorf("invalid method name: %q", methodName)
+		return fmt.Errorf("invalid method name: %q", *methodName)
 	}
 
 	file, err := pe.Open(*fileName)
 	if err != nil {
 		return fmt.Errorf("open PE file: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	c, err := types.FromPE(file)
 	if err != nil {
