@@ -51,7 +51,7 @@ func (t *Context) Uint64(tt md.TableType, row, column uint32) (uint64, error) {
 
 // String finds string value from #Strings heap using given index column.
 func (t *Context) String(tt md.TableType, row, column uint32) (string, error) {
-	idx, err := t.Uint32(tt, row, column)
+	idx, err := t.Uint64(tt, row, column)
 	if err != nil {
 		return "", err
 	}
@@ -61,7 +61,7 @@ func (t *Context) String(tt md.TableType, row, column uint32) (string, error) {
 
 // Blob finds blob value from #Blob heap using given index column.
 func (t *Context) Blob(tt md.TableType, row, column uint32) (Blob, error) {
-	idx, err := t.Uint32(tt, row, column)
+	idx, err := t.Uint64(tt, row, column)
 	if err != nil {
 		return nil, err
 	}

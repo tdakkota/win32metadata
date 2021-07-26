@@ -13,7 +13,7 @@ import (
 type Metadata struct {
 	r *io.SectionReader
 	// Cache strings from file to prevent allocations.
-	strings map[uint32]string
+	strings map[uint64]string
 	MetadataRoot
 }
 
@@ -52,7 +52,7 @@ func (m *Metadata) Tables() (TablesHeader, *io.SectionReader, error) {
 }
 
 // ReadString reads string from String heap.
-func (m *Metadata) ReadString(idx uint32) (string, error) {
+func (m *Metadata) ReadString(idx uint64) (string, error) {
 	if v, ok := m.strings[idx]; ok {
 		return v, nil
 	}
@@ -63,7 +63,7 @@ func (m *Metadata) ReadString(idx uint32) (string, error) {
 	}
 
 	var (
-		offset = int64(heap.Offset + idx)
+		offset = int64(heap.Offset) + int64(idx)
 		one    [1]byte
 		buf    strings.Builder
 	)
@@ -86,7 +86,7 @@ func (m *Metadata) ReadString(idx uint32) (string, error) {
 }
 
 // ReadBlob reads blob from Blob heap.
-func (m *Metadata) ReadBlob(idx uint32) ([]byte, error) {
+func (m *Metadata) ReadBlob(idx uint64) ([]byte, error) {
 	// TODO(tdakkota): Decode blob lazily using io.Reader/some helper.
 
 	heap, ok := m.findStreamHeader("#Blob")
@@ -94,7 +94,7 @@ func (m *Metadata) ReadBlob(idx uint32) ([]byte, error) {
 		return nil, fmt.Errorf("blob heap stream not found")
 	}
 	var (
-		offset = int64(heap.Offset + idx)
+		offset = int64(heap.Offset) + int64(idx)
 		buf    = make([]byte, 4)
 		// Size of blob data
 		blobSize int
@@ -148,7 +148,7 @@ func ParseMetadata(f *pe.File) (*Metadata, error) {
 
 	return &Metadata{
 		r:            r,
-		strings:      map[uint32]string{},
+		strings:      map[uint64]string{},
 		MetadataRoot: root,
 	}, nil
 }
