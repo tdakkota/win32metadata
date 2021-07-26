@@ -12,6 +12,8 @@ import (
 // metadata streams.
 type Metadata struct {
 	r *io.SectionReader
+	// Cache strings from file to prevent allocations.
+	strings map[uint32]string
 	MetadataRoot
 }
 
@@ -51,6 +53,10 @@ func (m *Metadata) Tables() (TablesHeader, *io.SectionReader, error) {
 
 // ReadString reads string from String heap.
 func (m *Metadata) ReadString(idx uint32) (string, error) {
+	if v, ok := m.strings[idx]; ok {
+		return v, nil
+	}
+
 	heap, ok := m.findStreamHeader("#Strings")
 	if !ok {
 		return "", fmt.Errorf("string heap stream not found")
@@ -74,7 +80,9 @@ func (m *Metadata) ReadString(idx uint32) (string, error) {
 		offset++
 	}
 
-	return buf.String(), nil
+	v := buf.String()
+	m.strings[idx] = v
+	return v, nil
 }
 
 // ReadBlob reads blob from Blob heap.
@@ -140,6 +148,7 @@ func ParseMetadata(f *pe.File) (*Metadata, error) {
 
 	return &Metadata{
 		r:            r,
+		strings:      map[uint32]string{},
 		MetadataRoot: root,
 	}, nil
 }
