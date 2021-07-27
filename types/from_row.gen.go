@@ -1020,7 +1020,7 @@ func (f *Param) FromRow(r Row) error {
 		if err != nil {
 			return fmt.Errorf("decode field Flags: %w", err)
 		}
-		f.Flags = FieldAttributes(v)
+		f.Flags = ParamAttributes(v)
 	}
 	{
 		v, err := r.Uint64(1)
