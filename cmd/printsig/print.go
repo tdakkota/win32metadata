@@ -205,7 +205,7 @@ func collectParamNames(c *types.Context, def types.MethodDef) (map[int]string, e
 	}
 
 	for _, param := range params {
-		paramNames[int(param.Sequence)] = param.Name
+		paramNames[int(param.Sequence)-1] = param.Name
 	}
 	return paramNames, nil
 }
