@@ -96,7 +96,7 @@ type ElementTypeTypeDef struct {
 }
 
 // ElementType is a II.23.1.16 Element types used in signatures representation kind.
-// Only one of GenericParam, Array, MethodDef, Field, TypeDefOrRef fields should be present.
+// Only one of GenericParam, Array, SZArray, MethodDef, Field, TypeDefOrRef fields should be present.
 type ElementType struct {
 	Kind         ElementTypeKind
 	GenericParam Index `table:"GenericParam"`
