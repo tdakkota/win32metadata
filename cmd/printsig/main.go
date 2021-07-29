@@ -14,6 +14,7 @@ import (
 func run(context.Context) error {
 	fileName := flag.String("file", "", "path to metadata file")
 	methodName := flag.String("method", "", "method to print")
+	typeNamespace := flag.String("namespace", "", "method namespace")
 	flag.Parse()
 
 	if *methodName == "" {
@@ -33,7 +34,7 @@ func run(context.Context) error {
 		return fmt.Errorf("parse metadata: %w", err)
 	}
 
-	method, err := findMethod(c, *methodName)
+	method, err := findMethod(c, *typeNamespace, *methodName)
 	if err != nil {
 		return err
 	}

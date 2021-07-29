@@ -7,12 +7,18 @@ import (
 	"github.com/tdakkota/win32metadata/types"
 )
 
-func findMethod(c *types.Context, methodName string) (types.MethodDef, error) {
+func findMethod(c *types.Context, typeNamespace, methodName string) (types.MethodDef, error) {
 	table := c.Table(md.TypeDef)
 	var typeDef types.TypeDef
+
+	checkNamespace := typeNamespace != ""
 	for i := uint32(0); i < table.RowCount(); i++ {
 		if err := typeDef.FromRow(table.Row(i)); err != nil {
 			return types.MethodDef{}, err
+		}
+
+		if checkNamespace && typeDef.TypeNamespace != typeNamespace {
+			continue
 		}
 
 		if typeDef.MethodList.Empty() {
