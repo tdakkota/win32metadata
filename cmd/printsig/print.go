@@ -88,7 +88,7 @@ func printTypeDef(
 		buf.WriteString("struct {\n")
 	}
 	for _, field := range fieldList {
-		if field.Flags&0x0010 != 0 {
+		if field.Flags.Static() {
 			continue // skip static fields
 		}
 
