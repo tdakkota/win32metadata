@@ -34,9 +34,9 @@ const indexTemplate = `
 type {{ .Name }} uint32
 
 // Create{{ .Name }} creates new composite index from given tag and table index.
-func Create{{ .Name }}(tag, idx uint32) {{ .Name }} {
+func Create{{ .Name }}(tt md.TableType, idx uint32) {{ .Name }} {
 	var t {{ .Name }}
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -52,7 +52,24 @@ func (t {{ .Name }}) Tag() uint32 {
 }
 
 // Set sets {{ .Name }} tag and index.
-func (t *{{ .Name }}) Set(tag, idx uint32) {
+func (t *{{ .Name }}) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	{{- range $tag := .Tags }}
+	{{- if (eq $tag.Name "Not used") }}
+	// Skip {{ $tag.Value }} "{{ $tag.Name }}", means tag is unused yet {{ else }}
+	{{- if (eq $tag.Name "Permission") }}
+	// Skip {{ $tag.Value }} "{{ $tag.Name }}", there is not such table
+	{{- else }}
+	case md.{{ $tag.Name }}:
+		tag = {{ $tag.Value }}
+	{{- end }}
+	{{- end }}
+
+	{{- end }}
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << {{ .Bits }}) | tag
 	*t = {{ .Name }}(val)
 }

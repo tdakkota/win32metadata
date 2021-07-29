@@ -19,9 +19,9 @@ var _ fmt.Stringer
 type TypeDefOrRef uint32
 
 // CreateTypeDefOrRef creates new composite index from given tag and table index.
-func CreateTypeDefOrRef(tag, idx uint32) TypeDefOrRef {
+func CreateTypeDefOrRef(tt md.TableType, idx uint32) TypeDefOrRef {
 	var t TypeDefOrRef
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -37,7 +37,18 @@ func (t TypeDefOrRef) Tag() uint32 {
 }
 
 // Set sets TypeDefOrRef tag and index.
-func (t *TypeDefOrRef) Set(tag, idx uint32) {
+func (t *TypeDefOrRef) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.TypeDef:
+		tag = 0
+	case md.TypeRef:
+		tag = 1
+	case md.TypeSpec:
+		tag = 2
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 2) | tag
 	*t = TypeDefOrRef(val)
 }
@@ -96,9 +107,9 @@ func (t TypeDefOrRef) String() string {
 type HasConstant uint32
 
 // CreateHasConstant creates new composite index from given tag and table index.
-func CreateHasConstant(tag, idx uint32) HasConstant {
+func CreateHasConstant(tt md.TableType, idx uint32) HasConstant {
 	var t HasConstant
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -114,7 +125,18 @@ func (t HasConstant) Tag() uint32 {
 }
 
 // Set sets HasConstant tag and index.
-func (t *HasConstant) Set(tag, idx uint32) {
+func (t *HasConstant) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.Field:
+		tag = 0
+	case md.Param:
+		tag = 1
+	case md.Property:
+		tag = 2
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 2) | tag
 	*t = HasConstant(val)
 }
@@ -192,9 +214,9 @@ func (t HasConstant) String() string {
 type HasCustomAttribute uint32
 
 // CreateHasCustomAttribute creates new composite index from given tag and table index.
-func CreateHasCustomAttribute(tag, idx uint32) HasCustomAttribute {
+func CreateHasCustomAttribute(tt md.TableType, idx uint32) HasCustomAttribute {
 	var t HasCustomAttribute
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -229,7 +251,55 @@ func (t HasCustomAttribute) Tag() uint32 {
 }
 
 // Set sets HasCustomAttribute tag and index.
-func (t *HasCustomAttribute) Set(tag, idx uint32) {
+func (t *HasCustomAttribute) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.MethodDef:
+		tag = 0
+	case md.Field:
+		tag = 1
+	case md.TypeRef:
+		tag = 2
+	case md.TypeDef:
+		tag = 3
+	case md.Param:
+		tag = 4
+	case md.InterfaceImpl:
+		tag = 5
+	case md.MemberRef:
+		tag = 6
+	case md.Module:
+		tag = 7
+	// Skip 8 "Permission", there is not such table
+	case md.Property:
+		tag = 9
+	case md.Event:
+		tag = 10
+	case md.StandAloneSig:
+		tag = 11
+	case md.ModuleRef:
+		tag = 12
+	case md.TypeSpec:
+		tag = 13
+	case md.Assembly:
+		tag = 14
+	case md.AssemblyRef:
+		tag = 15
+	case md.File:
+		tag = 16
+	case md.ExportedType:
+		tag = 17
+	case md.ManifestResource:
+		tag = 18
+	case md.GenericParam:
+		tag = 19
+	case md.GenericParamConstraint:
+		tag = 20
+	case md.MethodSpec:
+		tag = 21
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 5) | tag
 	*t = HasCustomAttribute(val)
 }
@@ -362,9 +432,9 @@ func (t HasCustomAttribute) String() string {
 type HasFieldMarshall uint32
 
 // CreateHasFieldMarshall creates new composite index from given tag and table index.
-func CreateHasFieldMarshall(tag, idx uint32) HasFieldMarshall {
+func CreateHasFieldMarshall(tt md.TableType, idx uint32) HasFieldMarshall {
 	var t HasFieldMarshall
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -379,7 +449,16 @@ func (t HasFieldMarshall) Tag() uint32 {
 }
 
 // Set sets HasFieldMarshall tag and index.
-func (t *HasFieldMarshall) Set(tag, idx uint32) {
+func (t *HasFieldMarshall) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.Field:
+		tag = 0
+	case md.Param:
+		tag = 1
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 1) | tag
 	*t = HasFieldMarshall(val)
 }
@@ -434,9 +513,9 @@ func (t HasFieldMarshall) String() string {
 type HasDeclSecurity uint32
 
 // CreateHasDeclSecurity creates new composite index from given tag and table index.
-func CreateHasDeclSecurity(tag, idx uint32) HasDeclSecurity {
+func CreateHasDeclSecurity(tt md.TableType, idx uint32) HasDeclSecurity {
 	var t HasDeclSecurity
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -452,7 +531,18 @@ func (t HasDeclSecurity) Tag() uint32 {
 }
 
 // Set sets HasDeclSecurity tag and index.
-func (t *HasDeclSecurity) Set(tag, idx uint32) {
+func (t *HasDeclSecurity) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.TypeDef:
+		tag = 0
+	case md.MethodDef:
+		tag = 1
+	case md.Assembly:
+		tag = 2
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 2) | tag
 	*t = HasDeclSecurity(val)
 }
@@ -513,9 +603,9 @@ func (t HasDeclSecurity) String() string {
 type MemberRefParent uint32
 
 // CreateMemberRefParent creates new composite index from given tag and table index.
-func CreateMemberRefParent(tag, idx uint32) MemberRefParent {
+func CreateMemberRefParent(tt md.TableType, idx uint32) MemberRefParent {
 	var t MemberRefParent
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -533,7 +623,22 @@ func (t MemberRefParent) Tag() uint32 {
 }
 
 // Set sets MemberRefParent tag and index.
-func (t *MemberRefParent) Set(tag, idx uint32) {
+func (t *MemberRefParent) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.TypeDef:
+		tag = 0
+	case md.TypeRef:
+		tag = 1
+	case md.ModuleRef:
+		tag = 2
+	case md.MethodDef:
+		tag = 3
+	case md.TypeSpec:
+		tag = 4
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 3) | tag
 	*t = MemberRefParent(val)
 }
@@ -599,9 +704,9 @@ func (t MemberRefParent) String() string {
 type HasSemantics uint32
 
 // CreateHasSemantics creates new composite index from given tag and table index.
-func CreateHasSemantics(tag, idx uint32) HasSemantics {
+func CreateHasSemantics(tt md.TableType, idx uint32) HasSemantics {
 	var t HasSemantics
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -616,7 +721,16 @@ func (t HasSemantics) Tag() uint32 {
 }
 
 // Set sets HasSemantics tag and index.
-func (t *HasSemantics) Set(tag, idx uint32) {
+func (t *HasSemantics) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.Event:
+		tag = 0
+	case md.Property:
+		tag = 1
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 1) | tag
 	*t = HasSemantics(val)
 }
@@ -670,9 +784,9 @@ func (t HasSemantics) String() string {
 type MethodDefOrRef uint32
 
 // CreateMethodDefOrRef creates new composite index from given tag and table index.
-func CreateMethodDefOrRef(tag, idx uint32) MethodDefOrRef {
+func CreateMethodDefOrRef(tt md.TableType, idx uint32) MethodDefOrRef {
 	var t MethodDefOrRef
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -687,7 +801,16 @@ func (t MethodDefOrRef) Tag() uint32 {
 }
 
 // Set sets MethodDefOrRef tag and index.
-func (t *MethodDefOrRef) Set(tag, idx uint32) {
+func (t *MethodDefOrRef) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.MethodDef:
+		tag = 0
+	case md.MemberRef:
+		tag = 1
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 1) | tag
 	*t = MethodDefOrRef(val)
 }
@@ -741,9 +864,9 @@ func (t MethodDefOrRef) String() string {
 type MemberForwarded uint32
 
 // CreateMemberForwarded creates new composite index from given tag and table index.
-func CreateMemberForwarded(tag, idx uint32) MemberForwarded {
+func CreateMemberForwarded(tt md.TableType, idx uint32) MemberForwarded {
 	var t MemberForwarded
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -758,7 +881,16 @@ func (t MemberForwarded) Tag() uint32 {
 }
 
 // Set sets MemberForwarded tag and index.
-func (t *MemberForwarded) Set(tag, idx uint32) {
+func (t *MemberForwarded) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.Field:
+		tag = 0
+	case md.MethodDef:
+		tag = 1
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 1) | tag
 	*t = MemberForwarded(val)
 }
@@ -813,9 +945,9 @@ func (t MemberForwarded) String() string {
 type Implementation uint32
 
 // CreateImplementation creates new composite index from given tag and table index.
-func CreateImplementation(tag, idx uint32) Implementation {
+func CreateImplementation(tt md.TableType, idx uint32) Implementation {
 	var t Implementation
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -831,7 +963,18 @@ func (t Implementation) Tag() uint32 {
 }
 
 // Set sets Implementation tag and index.
-func (t *Implementation) Set(tag, idx uint32) {
+func (t *Implementation) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.File:
+		tag = 0
+	case md.AssemblyRef:
+		tag = 1
+	case md.ExportedType:
+		tag = 2
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 2) | tag
 	*t = Implementation(val)
 }
@@ -892,9 +1035,9 @@ func (t Implementation) String() string {
 type CustomAttributeType uint32
 
 // CreateCustomAttributeType creates new composite index from given tag and table index.
-func CreateCustomAttributeType(tag, idx uint32) CustomAttributeType {
+func CreateCustomAttributeType(tt md.TableType, idx uint32) CustomAttributeType {
 	var t CustomAttributeType
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -912,7 +1055,19 @@ func (t CustomAttributeType) Tag() uint32 {
 }
 
 // Set sets CustomAttributeType tag and index.
-func (t *CustomAttributeType) Set(tag, idx uint32) {
+func (t *CustomAttributeType) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	// Skip 0 "Not used", means tag is unused yet
+	// Skip 1 "Not used", means tag is unused yet
+	case md.MethodDef:
+		tag = 2
+	case md.MemberRef:
+		tag = 3
+	// Skip 4 "Not used", means tag is unused yet
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 3) | tag
 	*t = CustomAttributeType(val)
 }
@@ -977,9 +1132,9 @@ func (t CustomAttributeType) String() string {
 type ResolutionScope uint32
 
 // CreateResolutionScope creates new composite index from given tag and table index.
-func CreateResolutionScope(tag, idx uint32) ResolutionScope {
+func CreateResolutionScope(tt md.TableType, idx uint32) ResolutionScope {
 	var t ResolutionScope
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -996,7 +1151,20 @@ func (t ResolutionScope) Tag() uint32 {
 }
 
 // Set sets ResolutionScope tag and index.
-func (t *ResolutionScope) Set(tag, idx uint32) {
+func (t *ResolutionScope) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.Module:
+		tag = 0
+	case md.ModuleRef:
+		tag = 1
+	case md.AssemblyRef:
+		tag = 2
+	case md.TypeRef:
+		tag = 3
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 2) | tag
 	*t = ResolutionScope(val)
 }
@@ -1058,9 +1226,9 @@ func (t ResolutionScope) String() string {
 type TypeOrMethodDef uint32
 
 // CreateTypeOrMethodDef creates new composite index from given tag and table index.
-func CreateTypeOrMethodDef(tag, idx uint32) TypeOrMethodDef {
+func CreateTypeOrMethodDef(tt md.TableType, idx uint32) TypeOrMethodDef {
 	var t TypeOrMethodDef
-	t.Set(tag, idx)
+	t.Set(tt, idx)
 	return t
 }
 
@@ -1075,7 +1243,16 @@ func (t TypeOrMethodDef) Tag() uint32 {
 }
 
 // Set sets TypeOrMethodDef tag and index.
-func (t *TypeOrMethodDef) Set(tag, idx uint32) {
+func (t *TypeOrMethodDef) Set(tt md.TableType, idx uint32) {
+	var tag uint32
+	switch tt {
+	case md.TypeDef:
+		tag = 0
+	case md.MethodDef:
+		tag = 1
+	default:
+		panic(fmt.Sprintf("unexpected table type %v", tt))
+	}
 	val := ((idx + 1) << 1) | tag
 	*t = TypeOrMethodDef(val)
 }
