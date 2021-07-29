@@ -34,13 +34,13 @@ func run(context.Context) error {
 		return fmt.Errorf("parse metadata: %w", err)
 	}
 
-	method, err := findMethod(c, *typeNamespace, *methodName)
+	methodIdx, method, err := findMethod(c, *typeNamespace, *methodName)
 	if err != nil {
 		return err
 	}
 	toPrint := map[types.TypeDefOrRef]types.TypeDef{}
 
-	s, err := printMethod(c, method, toPrint)
+	s, err := printMethod(c, methodIdx, method, toPrint)
 	if err != nil {
 		return fmt.Errorf("print method %q: %w", method.Name, err)
 	}

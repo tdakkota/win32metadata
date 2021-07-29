@@ -7,39 +7,40 @@ import (
 	"github.com/tdakkota/win32metadata/types"
 )
 
-func findMethod(c *types.Context, typeNamespace, methodName string) (types.MethodDef, error) {
-	table := c.Table(md.TypeDef)
-	var typeDef types.TypeDef
-
+func findMethod(c *types.Context, typeNamespace, methodName string) (uint32, types.MethodDef, error) {
 	checkNamespace := typeNamespace != ""
-	for i := uint32(0); i < table.RowCount(); i++ {
-		if err := typeDef.FromRow(table.Row(i)); err != nil {
-			return types.MethodDef{}, err
+
+	typeDefs := c.Table(md.TypeDef)
+	methodDefs := c.Table(md.MethodDef)
+
+	var typeDef types.TypeDef
+	for i := uint32(0); i < typeDefs.RowCount(); i++ {
+		if err := typeDef.FromRow(typeDefs.Row(i)); err != nil {
+			return 0, types.MethodDef{}, err
 		}
 
 		if checkNamespace && typeDef.TypeNamespace != typeNamespace {
 			continue
 		}
 
-		if typeDef.MethodList.Empty() {
+		list := typeDef.MethodList
+		if list.Empty() {
 			continue
 		}
 
-		methods, err := typeDef.ResolveMethodList(c)
-		if err != nil {
-			return types.MethodDef{}, err
-		}
-
-		for _, method := range methods {
-			if methodName != method.Name {
-				continue
+		var methodDef types.MethodDef
+		for methodIdx := list.Start(); methodIdx < list.End(); methodIdx++ {
+			if err := methodDef.FromRow(methodDefs.Row(methodIdx)); err != nil {
+				return 0, types.MethodDef{}, err
 			}
 
-			return method, nil
+			if methodName == methodDef.Name {
+				return methodIdx, methodDef, nil
+			}
 		}
 	}
 
-	return types.MethodDef{}, fmt.Errorf("method %q not found", methodName)
+	return 0, types.MethodDef{}, fmt.Errorf("method %q not found", methodName)
 }
 
 func resolveTypeRef(t *types.Context, row types.Row) (types.TypeDef, uint32, error) {

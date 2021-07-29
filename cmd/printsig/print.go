@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -233,24 +234,37 @@ func collectParamNames(c *types.Context, def types.MethodDef) (map[int]string, e
 }
 
 func printMethod(
-	c *types.Context,
+	ctx *types.Context,
+	methodIdx uint32,
 	def types.MethodDef,
 	toPrint map[types.TypeDefOrRef]types.TypeDef,
 ) (string, error) {
 	r := def.Signature.Reader()
 
-	method, err := r.Method(c)
+	method, err := r.Method(ctx)
 	if err != nil {
 		return "", err
 	}
 	count := len(method.Params)
 
-	paramNames, err := collectParamNames(c, def)
+	paramNames, err := collectParamNames(ctx, def)
 	if err != nil {
 		return "", err
 	}
 
+	dllImport, err := findMethodDLLImport(ctx, methodIdx)
+	if err != nil && !errors.Is(err, errImportNotFound) {
+		return "", err
+	}
+
 	log := strings.Builder{}
+	if dllImport.DLLName != "" {
+		log.WriteString(fmt.Sprintf("// var proc%s = NewLazySystemDLL(%q).NewProc(%q)\n\n",
+			def.Name,
+			dllImport.DLLName+".dll",
+			dllImport.RoutineName,
+		))
+	}
 	log.WriteString("func ")
 	log.WriteString(def.Name)
 	log.WriteByte('(')
@@ -267,7 +281,7 @@ func printMethod(
 
 			log.WriteByte(' ')
 
-			_, typeName, err := printName(c, method.Params[i], toPrint)
+			_, typeName, err := printName(ctx, method.Params[i], toPrint)
 			if err != nil {
 				return "", err
 			}
@@ -277,7 +291,7 @@ func printMethod(
 	}
 	log.WriteString(") ")
 
-	_, typeName, err := printName(c, method.Return, toPrint)
+	_, typeName, err := printName(ctx, method.Return, toPrint)
 	if err != nil {
 		return "", err
 	}
@@ -285,4 +299,43 @@ func printMethod(
 	log.WriteByte('\n')
 
 	return log.String(), nil
+}
+
+type dynamicImport struct {
+	DLLName     string
+	RoutineName string
+}
+
+var errImportNotFound = errors.New("import not found")
+
+func findMethodDLLImport(ctx *types.Context, idx uint32) (dynamicImport, error) {
+	table := ctx.Table(md.ImplMap)
+	var implMap types.ImplMap
+
+	for i := uint32(0); i < table.RowCount(); i++ {
+		if err := implMap.FromRow(table.Row(i)); err != nil {
+			return dynamicImport{}, err
+		}
+		member := implMap.MemberForwarded
+
+		if tt, ok := member.Table(); !ok || tt != md.MethodDef {
+			continue
+		}
+
+		if member.TableIndex() != idx {
+			continue
+		}
+
+		module, err := implMap.ResolveImportScope(ctx)
+		if err != nil {
+			return dynamicImport{}, err
+		}
+
+		return dynamicImport{
+			DLLName:     module.Name,
+			RoutineName: implMap.ImportName,
+		}, nil
+	}
+
+	return dynamicImport{}, errImportNotFound
 }
