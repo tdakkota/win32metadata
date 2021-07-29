@@ -5,44 +5,66 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/tdakkota/win32metadata/md"
 	"github.com/tdakkota/win32metadata/types"
 )
 
 func queueTypeDefs(
-	c *types.Context,
-	e types.Element,
+	ctx *types.Context,
+	idx types.TypeDefOrRef,
 	toPrint map[types.TypeDefOrRef]types.TypeDef,
 ) (namespace, name string, err error) {
-	idx := e.Type.TypeDef.Index
+	if tableType, ok := idx.Table(); ok && tableType == md.TypeRef {
+		row, ok := idx.Row(ctx)
+		if !ok {
+			return "", "", fmt.Errorf("TypeRef %d not found", idx.TableIndex())
+		}
+
+		var ref types.TypeRef
+		if err := ref.FromRow(row); err != nil {
+			return "", "", err
+		}
+		if ref.TypeNamespace == "System" && ref.TypeName == "Guid" {
+			return ref.TypeNamespace, "[128]byte", err
+		}
+	}
 
 	def, ok := toPrint[idx]
 	if ok {
 		return def.TypeNamespace, def.TypeName, nil
 	}
 
-	d, err := resolveTypeDef(c, idx)
+	d, err := resolveTypeDef(ctx, idx)
 	if err != nil {
 		return "", "", err
 	}
 
-	fieldList, err := d.ResolveFieldList(c)
+	fieldList, err := d.ResolveFieldList(ctx)
 	if err != nil {
 		return "", "", err
 	}
 
 	for _, field := range fieldList {
-		sig, err := field.Signature.Reader().Field(c)
+		sig, err := field.Signature.Reader().Field(ctx)
 		if err != nil {
 			return "", "", err
 		}
 
-		kind := sig.Field.Type.Kind
+		typ := sig.Field.Type
+		kind := typ.Kind
+
 		if kind != types.ELEMENT_TYPE_VALUETYPE &&
 			kind != types.ELEMENT_TYPE_CLASS {
 			continue
 		}
 
-		if _, _, err := queueTypeDefs(c, sig.Field, toPrint); err != nil {
+		// Prevent infinite recursion.
+		fieldIdx := typ.TypeDef.Index
+		if fieldIdx == idx {
+			continue
+		}
+
+		if _, _, err := queueTypeDefs(ctx, fieldIdx, toPrint); err != nil {
 			return "", "", err
 		}
 	}
@@ -99,7 +121,7 @@ func printTypeDef(
 }
 
 func printName(
-	c *types.Context,
+	ctx *types.Context,
 	e types.Element,
 	toPrint map[types.TypeDefOrRef]types.TypeDef,
 ) (namespace, name string, err error) {
@@ -133,7 +155,7 @@ func printName(
 	case types.ELEMENT_TYPE_STRING:
 		name = "string"
 	case types.ELEMENT_TYPE_VALUETYPE, types.ELEMENT_TYPE_CLASS:
-		namespace, name, err = queueTypeDefs(c, e, toPrint)
+		namespace, name, err = queueTypeDefs(ctx, e.Type.TypeDef.Index, toPrint)
 		if err != nil {
 			return "", "", err
 		}
@@ -144,7 +166,7 @@ func printName(
 	case types.ELEMENT_TYPE_OBJECT:
 		name = "Object"
 	case types.ELEMENT_TYPE_GENERICINST:
-		_, genericName, err := c.ResolveTypeDefOrRefName(e.Type.TypeDef.Index)
+		_, genericName, err := ctx.ResolveTypeDefOrRefName(e.Type.TypeDef.Index)
 		if err != nil {
 			return "", "", err
 		}
@@ -155,7 +177,7 @@ func printName(
 		name += "<"
 
 		for i, arg := range e.Type.TypeDef.Generics {
-			_, argName, err := printName(c, types.Element{
+			_, argName, err := printName(ctx, types.Element{
 				Type: arg,
 			}, toPrint)
 			if err != nil {
@@ -169,14 +191,14 @@ func printName(
 		}
 		name += ">"
 	case types.ELEMENT_TYPE_ARRAY:
-		ns, elemName, err := printName(c, *e.Type.Array.Elem, toPrint)
+		ns, elemName, err := printName(ctx, *e.Type.Array.Elem, toPrint)
 		if err != nil {
 			return "", "", err
 		}
 		name = fmt.Sprintf("%s[%d]", elemName, e.Type.Array.Size)
 		namespace = ns
 	case types.ELEMENT_TYPE_SZARRAY:
-		ns, elemName, err := printName(c, *e.Type.SZArray.Elem, toPrint)
+		ns, elemName, err := printName(ctx, *e.Type.SZArray.Elem, toPrint)
 		if err != nil {
 			return "", "", err
 		}
