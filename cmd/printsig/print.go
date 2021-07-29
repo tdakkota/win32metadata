@@ -39,6 +39,7 @@ func queueTypeDefs(
 	if err != nil {
 		return "", "", err
 	}
+	toPrint[idx] = d
 
 	fieldList, err := d.ResolveFieldList(ctx)
 	if err != nil {
@@ -59,18 +60,11 @@ func queueTypeDefs(
 			continue
 		}
 
-		// Prevent infinite recursion.
-		fieldIdx := typ.TypeDef.Index
-		if fieldIdx == idx {
-			continue
-		}
-
-		if _, _, err := queueTypeDefs(ctx, fieldIdx, toPrint); err != nil {
+		if _, _, err := queueTypeDefs(ctx, typ.TypeDef.Index, toPrint); err != nil {
 			return "", "", err
 		}
 	}
 
-	toPrint[idx] = d
 	return d.TypeNamespace, d.TypeName, nil
 }
 
