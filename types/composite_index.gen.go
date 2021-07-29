@@ -18,6 +18,13 @@ var _ fmt.Stringer
 // table.
 type TypeDefOrRef uint32
 
+// CreateTypeDefOrRef creates new composite index from given tag and table index.
+func CreateTypeDefOrRef(tag, idx uint32) TypeDefOrRef {
+	var t TypeDefOrRef
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns TypeDefOrRef tag.
 // Tag table:
 //
@@ -27,6 +34,12 @@ type TypeDefOrRef uint32
 //
 func (t TypeDefOrRef) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
+}
+
+// Set sets TypeDefOrRef tag and index.
+func (t *TypeDefOrRef) Set(tag, idx uint32) {
+	val := ((idx + 1) << 2) | tag
+	*t = TypeDefOrRef(val)
 }
 
 // Table returns associated TableType using tag.
@@ -82,6 +95,13 @@ func (t TypeDefOrRef) String() string {
 // table.
 type HasConstant uint32
 
+// CreateHasConstant creates new composite index from given tag and table index.
+func CreateHasConstant(tag, idx uint32) HasConstant {
+	var t HasConstant
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns HasConstant tag.
 // Tag table:
 //
@@ -91,6 +111,12 @@ type HasConstant uint32
 //
 func (t HasConstant) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
+}
+
+// Set sets HasConstant tag and index.
+func (t *HasConstant) Set(tag, idx uint32) {
+	val := ((idx + 1) << 2) | tag
+	*t = HasConstant(val)
 }
 
 // Table returns associated TableType using tag.
@@ -165,6 +191,13 @@ func (t HasConstant) String() string {
 // table.
 type HasCustomAttribute uint32
 
+// CreateHasCustomAttribute creates new composite index from given tag and table index.
+func CreateHasCustomAttribute(tag, idx uint32) HasCustomAttribute {
+	var t HasCustomAttribute
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns HasCustomAttribute tag.
 // Tag table:
 //
@@ -193,6 +226,12 @@ type HasCustomAttribute uint32
 //
 func (t HasCustomAttribute) Tag() uint32 {
 	return uint32(t & ((1 << 5) - 1))
+}
+
+// Set sets HasCustomAttribute tag and index.
+func (t *HasCustomAttribute) Set(tag, idx uint32) {
+	val := ((idx + 1) << 5) | tag
+	*t = HasCustomAttribute(val)
 }
 
 // Table returns associated TableType using tag.
@@ -322,6 +361,13 @@ func (t HasCustomAttribute) String() string {
 // table.
 type HasFieldMarshall uint32
 
+// CreateHasFieldMarshall creates new composite index from given tag and table index.
+func CreateHasFieldMarshall(tag, idx uint32) HasFieldMarshall {
+	var t HasFieldMarshall
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns HasFieldMarshall tag.
 // Tag table:
 //
@@ -330,6 +376,12 @@ type HasFieldMarshall uint32
 //
 func (t HasFieldMarshall) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
+}
+
+// Set sets HasFieldMarshall tag and index.
+func (t *HasFieldMarshall) Set(tag, idx uint32) {
+	val := ((idx + 1) << 1) | tag
+	*t = HasFieldMarshall(val)
 }
 
 // Table returns associated TableType using tag.
@@ -381,6 +433,13 @@ func (t HasFieldMarshall) String() string {
 // table.
 type HasDeclSecurity uint32
 
+// CreateHasDeclSecurity creates new composite index from given tag and table index.
+func CreateHasDeclSecurity(tag, idx uint32) HasDeclSecurity {
+	var t HasDeclSecurity
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns HasDeclSecurity tag.
 // Tag table:
 //
@@ -390,6 +449,12 @@ type HasDeclSecurity uint32
 //
 func (t HasDeclSecurity) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
+}
+
+// Set sets HasDeclSecurity tag and index.
+func (t *HasDeclSecurity) Set(tag, idx uint32) {
+	val := ((idx + 1) << 2) | tag
+	*t = HasDeclSecurity(val)
 }
 
 // Table returns associated TableType using tag.
@@ -447,6 +512,13 @@ func (t HasDeclSecurity) String() string {
 // table.
 type MemberRefParent uint32
 
+// CreateMemberRefParent creates new composite index from given tag and table index.
+func CreateMemberRefParent(tag, idx uint32) MemberRefParent {
+	var t MemberRefParent
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns MemberRefParent tag.
 // Tag table:
 //
@@ -458,6 +530,12 @@ type MemberRefParent uint32
 //
 func (t MemberRefParent) Tag() uint32 {
 	return uint32(t & ((1 << 3) - 1))
+}
+
+// Set sets MemberRefParent tag and index.
+func (t *MemberRefParent) Set(tag, idx uint32) {
+	val := ((idx + 1) << 3) | tag
+	*t = MemberRefParent(val)
 }
 
 // Table returns associated TableType using tag.
@@ -520,6 +598,13 @@ func (t MemberRefParent) String() string {
 // table.
 type HasSemantics uint32
 
+// CreateHasSemantics creates new composite index from given tag and table index.
+func CreateHasSemantics(tag, idx uint32) HasSemantics {
+	var t HasSemantics
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns HasSemantics tag.
 // Tag table:
 //
@@ -528,6 +613,12 @@ type HasSemantics uint32
 //
 func (t HasSemantics) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
+}
+
+// Set sets HasSemantics tag and index.
+func (t *HasSemantics) Set(tag, idx uint32) {
+	val := ((idx + 1) << 1) | tag
+	*t = HasSemantics(val)
 }
 
 // Table returns associated TableType using tag.
@@ -578,6 +669,13 @@ func (t HasSemantics) String() string {
 // table.
 type MethodDefOrRef uint32
 
+// CreateMethodDefOrRef creates new composite index from given tag and table index.
+func CreateMethodDefOrRef(tag, idx uint32) MethodDefOrRef {
+	var t MethodDefOrRef
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns MethodDefOrRef tag.
 // Tag table:
 //
@@ -586,6 +684,12 @@ type MethodDefOrRef uint32
 //
 func (t MethodDefOrRef) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
+}
+
+// Set sets MethodDefOrRef tag and index.
+func (t *MethodDefOrRef) Set(tag, idx uint32) {
+	val := ((idx + 1) << 1) | tag
+	*t = MethodDefOrRef(val)
 }
 
 // Table returns associated TableType using tag.
@@ -636,6 +740,13 @@ func (t MethodDefOrRef) String() string {
 // table.
 type MemberForwarded uint32
 
+// CreateMemberForwarded creates new composite index from given tag and table index.
+func CreateMemberForwarded(tag, idx uint32) MemberForwarded {
+	var t MemberForwarded
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns MemberForwarded tag.
 // Tag table:
 //
@@ -644,6 +755,12 @@ type MemberForwarded uint32
 //
 func (t MemberForwarded) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
+}
+
+// Set sets MemberForwarded tag and index.
+func (t *MemberForwarded) Set(tag, idx uint32) {
+	val := ((idx + 1) << 1) | tag
+	*t = MemberForwarded(val)
 }
 
 // Table returns associated TableType using tag.
@@ -695,6 +812,13 @@ func (t MemberForwarded) String() string {
 // table.
 type Implementation uint32
 
+// CreateImplementation creates new composite index from given tag and table index.
+func CreateImplementation(tag, idx uint32) Implementation {
+	var t Implementation
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns Implementation tag.
 // Tag table:
 //
@@ -704,6 +828,12 @@ type Implementation uint32
 //
 func (t Implementation) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
+}
+
+// Set sets Implementation tag and index.
+func (t *Implementation) Set(tag, idx uint32) {
+	val := ((idx + 1) << 2) | tag
+	*t = Implementation(val)
 }
 
 // Table returns associated TableType using tag.
@@ -761,6 +891,13 @@ func (t Implementation) String() string {
 // table.
 type CustomAttributeType uint32
 
+// CreateCustomAttributeType creates new composite index from given tag and table index.
+func CreateCustomAttributeType(tag, idx uint32) CustomAttributeType {
+	var t CustomAttributeType
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns CustomAttributeType tag.
 // Tag table:
 //
@@ -772,6 +909,12 @@ type CustomAttributeType uint32
 //
 func (t CustomAttributeType) Tag() uint32 {
 	return uint32(t & ((1 << 3) - 1))
+}
+
+// Set sets CustomAttributeType tag and index.
+func (t *CustomAttributeType) Set(tag, idx uint32) {
+	val := ((idx + 1) << 3) | tag
+	*t = CustomAttributeType(val)
 }
 
 // Table returns associated TableType using tag.
@@ -833,6 +976,13 @@ func (t CustomAttributeType) String() string {
 // table.
 type ResolutionScope uint32
 
+// CreateResolutionScope creates new composite index from given tag and table index.
+func CreateResolutionScope(tag, idx uint32) ResolutionScope {
+	var t ResolutionScope
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns ResolutionScope tag.
 // Tag table:
 //
@@ -843,6 +993,12 @@ type ResolutionScope uint32
 //
 func (t ResolutionScope) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
+}
+
+// Set sets ResolutionScope tag and index.
+func (t *ResolutionScope) Set(tag, idx uint32) {
+	val := ((idx + 1) << 2) | tag
+	*t = ResolutionScope(val)
 }
 
 // Table returns associated TableType using tag.
@@ -901,6 +1057,13 @@ func (t ResolutionScope) String() string {
 // table.
 type TypeOrMethodDef uint32
 
+// CreateTypeOrMethodDef creates new composite index from given tag and table index.
+func CreateTypeOrMethodDef(tag, idx uint32) TypeOrMethodDef {
+	var t TypeOrMethodDef
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns TypeOrMethodDef tag.
 // Tag table:
 //
@@ -909,6 +1072,12 @@ type TypeOrMethodDef uint32
 //
 func (t TypeOrMethodDef) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
+}
+
+// Set sets TypeOrMethodDef tag and index.
+func (t *TypeOrMethodDef) Set(tag, idx uint32) {
+	val := ((idx + 1) << 1) | tag
+	*t = TypeOrMethodDef(val)
 }
 
 // Table returns associated TableType using tag.

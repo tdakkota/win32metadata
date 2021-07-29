@@ -33,6 +33,13 @@ const indexTemplate = `
 // table.
 type {{ .Name }} uint32
 
+// Create{{ .Name }} creates new composite index from given tag and table index.
+func Create{{ .Name }}(tag, idx uint32) {{ .Name }} {
+	var t {{ .Name }}
+	t.Set(tag, idx)
+	return t
+}
+
 // Tag returns {{ .Name }} tag.
 // Tag table:
 //
@@ -42,6 +49,12 @@ type {{ .Name }} uint32
 //
 func (t {{ .Name }}) Tag() uint32 {
 	return uint32(t & ((1 << {{ .Bits }}) - 1))
+}
+
+// Set sets {{ .Name }} tag and index.
+func (t *{{ .Name }}) Set(tag, idx uint32) {
+	val := ((idx + 1) << {{ .Bits }}) | tag
+	*t = {{ .Name }}(val)
 }
 
 // Table returns associated TableType using tag.
