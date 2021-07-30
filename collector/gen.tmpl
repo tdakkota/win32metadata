@@ -1,0 +1,64 @@
+{{- /*gotype: github.com/tdakkota/win32metadata/collector.Type*/ -}}
+package {{ $.Package }}
+
+import (
+    "golang.org/x/sys/windows"
+
+{{ range $import := $.Imports -}}
+    {{ $import.Path }}
+{{ end -}}
+)
+
+var (
+    _ windows.LazyDLL
+
+    {{ range $import := $.Imports -}}
+    _ {{ $import.Package }}.{{ $import.Def }}
+    {{ end -}}
+)
+
+// {{ $.Name }} type.
+// Namespace: {{ $.Namespace }}
+type {{ $.Name }} {{ if $.IsNewType }} {{ (index $.Fields 0).GoType -}}
+{{ else }} struct {
+{{ range $field := $.Fields -}}
+    {{ $field.Name }} {{ $field.GoType }}
+{{ end -}}
+}
+{{ end }}
+
+{{ if $.Constants }}const (
+{{ range $constant := $.Constants -}}{{ if ne $constant.GoType "[128]byte" -}}
+    {{ $constant.Name }} {{ $constant.GoType }} = {{ $constant.Value }}
+{{ end -}}{{ end -}}
+){{ end }}
+
+{{ range $method := $.Methods -}}{{ if $method.DLLName }}
+var proc{{ $.Name }}{{ $method.Name }} = windows.NewLazySystemDLL(`{{ $method.DLLName }}.dll`).
+    NewProc(`{{ $method.DLLImport }}`)
+
+func (r {{ $.Name }}) {{ $method.Name }}(
+{{ range $param := $method.Params -}}
+    {{ $param.Name }} {{ $param.GoType }},
+{{ end -}}
+)
+{{- if $method.Return.GoType }}({{ $method.Return.GoType }}, error) {
+    var zero {{ $method.Return.GoType }}
+    if err := proc{{ $.Name }}{{ $method.Name }}.Find(); err != nil {
+        return zero, err
+    }
+
+    _, _, err := proc{{ $.Name }}{{ $method.Name }}.Call()
+    return zero, err
+}
+{{- else }}error {
+    if err := proc{{ $.Name }}{{ $method.Name }}.Find(); err != nil {
+        return err
+    }
+
+    _, _, err := proc{{ $.Name }}{{ $method.Name }}.Call()
+    return err
+}
+{{ end }}
+
+{{ end }}{{ end }}
