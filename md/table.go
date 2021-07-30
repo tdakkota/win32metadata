@@ -118,21 +118,25 @@ type Table struct {
 }
 
 // Find returns offset of given column in row.
-func (t Table) Find(row, column uint32) uint32 {
+func (t Table) Find(row, column uint32) (uint32, error) {
 	c := t.Columns[column]
 	if c.Zero() {
-		panic(fmt.Sprintf("type %#x does not have column %d", t.Type, column))
+		return 0, fmt.Errorf("type %#x does not have column %d", t.Type, column)
 	}
-	if row >= t.RowCount {
-		panic(fmt.Sprintf("row index %d is out of bounds (%d)", row, t.RowCount))
+	if row > t.RowCount {
+		return 0, fmt.Errorf("row index %d is out of bounds (%d)", row, t.RowCount)
 	}
 
-	return uint32(t.Offset) + row*t.RowSize + c.Offset
+	return uint32(t.Offset) + row*t.RowSize + c.Offset, nil
 }
 
 // Uint32 returns numeric value truncated to uint32.
 func (t Table) Uint32(r io.ReaderAt, row, column uint32) (uint32, error) {
-	offset := t.Find(row, column)
+	offset, err := t.Find(row, column)
+	if err != nil {
+		return 0, err
+	}
+
 	buf := make([]byte, t.Columns[column].Size)
 	if _, err := r.ReadAt(buf, int64(offset)); err != nil {
 		return 0, err
@@ -152,7 +156,10 @@ func (t Table) Uint32(r io.ReaderAt, row, column uint32) (uint32, error) {
 
 // Uint64 returns numeric value truncated to uint64.
 func (t Table) Uint64(r io.ReaderAt, row, column uint32) (uint64, error) {
-	offset := t.Find(row, column)
+	offset, err := t.Find(row, column)
+	if err != nil {
+		return 0, err
+	}
 	buf := make([]byte, t.Columns[column].Size)
 	if _, err := r.ReadAt(buf, int64(offset)); err != nil {
 		return 0, err
