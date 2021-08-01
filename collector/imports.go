@@ -38,7 +38,7 @@ type imports struct {
 
 func (i *imports) Import(def namedType) string {
 	pkg := getPackage(def.Namespace)
-	if i.currentPkg == pkg {
+	if i.currentPkg == pkg || (pkg == "" && def.Union) {
 		return publicName(def.Name)
 	}
 

@@ -18,10 +18,14 @@ type collector struct {
 	typeNameIdx map[typeDefKey][]types.Index
 	// TypeDef index of enclosing class -> map[TypeDef.Name]TypeDef index of nested classes
 	nestedIdx map[types.Index]map[string]types.Index
+	// TypeDef index of nested class -> TypeDef index of enclosing class
+	enclosingIdx map[types.Index]types.Index
 	// MethodDef or Field index -> ImplMap index
 	implMapIdx map[types.MemberForwarded]types.ImplMap
 	// Param, Field, or Property index -> Constant index
 	constantIdx map[types.HasConstant]types.Index
+
+	typeSizes map[types.TypeDefOrRef]int
 }
 
 func newCollector(f *pe.File) (*collector, error) {
@@ -31,7 +35,8 @@ func newCollector(f *pe.File) (*collector, error) {
 	}
 
 	c := &collector{
-		ctx: ctx,
+		ctx:       ctx,
+		typeSizes: map[types.TypeDefOrRef]int{},
 	}
 
 	if err := c.readIndex(); err != nil {
@@ -67,6 +72,7 @@ func (c *collector) readIndex() error {
 	{
 		table := c.ctx.Table(md.NestedClass)
 		c.nestedIdx = make(map[types.Index]map[string]types.Index, table.RowCount())
+		c.enclosingIdx = make(map[types.Index]types.Index, table.RowCount())
 
 		var class types.NestedClass
 		for i := uint32(0); i < table.RowCount(); i++ {
@@ -85,6 +91,7 @@ func (c *collector) readIndex() error {
 				c.nestedIdx[class.EnclosingClass] = map[string]types.Index{}
 			}
 			c.nestedIdx[class.EnclosingClass][nested.TypeName] = class.NestedClass
+			c.enclosingIdx[class.NestedClass] = class.EnclosingClass
 		}
 	}
 

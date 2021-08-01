@@ -3,7 +3,6 @@ package collector
 import (
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/tdakkota/win32metadata/md"
@@ -13,16 +12,17 @@ import (
 func (c *collector) Collect(fn func(t Type) error) error {
 	typeDefs := c.ctx.Table(md.TypeDef)
 	var typeDef types.TypeDef
-	for i := uint32(0); i < typeDefs.RowCount(); i++ {
+	for i := uint32(1); i < typeDefs.RowCount(); i++ {
 		if err := typeDef.FromRow(typeDefs.Row(i)); err != nil {
 			return err
 		}
 
-		if strings.Contains(typeDef.TypeNamespace, "Windows.Win32.System.WinRT") {
+		if typeDef.TypeNamespace == "" ||
+			strings.Contains(typeDef.TypeNamespace, "Windows.Win32.System.WinRT") {
 			continue
 		}
 
-		typ, err := c.collectType(typeDef)
+		typ, err := c.collectType(i, typeDef)
 		if err != nil {
 			return fmt.Errorf(
 				"type %s.%s (%d): %w",
@@ -38,13 +38,15 @@ func (c *collector) Collect(fn func(t Type) error) error {
 	return nil
 }
 
-func (c *collector) collectType(typeDef types.TypeDef) (Type, error) {
-	pkg := getPackage(typeDef.TypeNamespace)
+func (c *collector) collectType(typeIdx types.Index, typeDef types.TypeDef) (Type, error) {
+	ns := typeDef.TypeNamespace
+	pkg := getPackage(ns)
 	typ := Type{
 		Name:      publicName(typeDef.TypeName),
-		Namespace: typeDef.TypeNamespace,
+		Namespace: ns,
 		Package:   pkg,
 	}
+
 	imp := &imports{
 		currentPkg: pkg,
 		types:      map[namedType]Import{},
@@ -59,7 +61,7 @@ func (c *collector) collectType(typeDef types.TypeDef) (Type, error) {
 		fieldsStart := typeDef.FieldList.Start()
 		for idx, field := range fields {
 			if field.Flags.Static() {
-				cst, err := c.collectConstant(imp, fieldsStart+uint32(idx), field)
+				cst, err := c.collectConstant(imp, fieldsStart+types.Index(idx), field)
 				if err != nil {
 					return typ, fmt.Errorf("constant %s: %w", field.Name, err)
 				}
@@ -86,7 +88,7 @@ func (c *collector) collectType(typeDef types.TypeDef) (Type, error) {
 
 		methodsStart := typeDef.MethodList.Start()
 		for idx, methodDef := range methodDefs {
-			method, err := c.collectMethod(imp, methodsStart+uint32(idx), methodDef)
+			method, err := c.collectMethod(imp, methodsStart+types.Index(idx), methodDef)
 			if err != nil {
 				return typ, fmt.Errorf("method %s: %w", methodDef.Name, err)
 			}
@@ -106,25 +108,6 @@ func (c *collector) collectType(typeDef types.TypeDef) (Type, error) {
 	return typ, nil
 }
 
-func cleanupName(name string) string {
-	switch name {
-	case "type", "struct", "map", "chan", "select", "switch", "case", "default", "range", "func",
-		"package", "import", "var", "const", "return":
-		return cleanupName(name + "_")
-	default:
-		return name
-	}
-}
-
-func publicName(name string) string {
-	name = strings.TrimPrefix(name, "_")
-	// Handle cases like DXGI_MATRIX_3X2_F fields.
-	if _, err := strconv.Atoi(name); err == nil {
-		name = "Field_" + name
-	}
-	return strings.Title(cleanupName(name))
-}
-
 func (c *collector) collectField(imp *imports, field types.Field) (Field, error) {
 	sig, err := field.Signature.Reader().Field(c.ctx)
 	if err != nil {
@@ -142,7 +125,7 @@ func (c *collector) collectField(imp *imports, field types.Field) (Field, error)
 	}, nil
 }
 
-func (c *collector) collectConstant(imp *imports, idx uint32, field types.Field) (Constant, error) {
+func (c *collector) collectConstant(imp *imports, idx types.Index, field types.Field) (Constant, error) {
 	sig, err := field.Signature.Reader().Field(c.ctx)
 	if err != nil {
 		return Constant{}, fmt.Errorf("const signature: %w", err)
@@ -171,7 +154,7 @@ func (c *collector) collectConstant(imp *imports, idx uint32, field types.Field)
 	}, nil
 }
 
-func (c *collector) collectMethod(imp *imports, idx uint32, method types.MethodDef) (Method, error) {
+func (c *collector) collectMethod(imp *imports, idx types.Index, method types.MethodDef) (Method, error) {
 	sig, err := method.Signature.Reader().Method(c.ctx)
 	if err != nil {
 		return Method{}, fmt.Errorf("method signature: %w", err)

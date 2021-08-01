@@ -59,16 +59,17 @@ func TestGenerateAll(t *testing.T) {
 	}
 
 	buf := bytes.Buffer{}
-	a.NoError(col.Collect(func(t Type) error {
-		if t.Name == "<Module>" {
+	a.NoError(col.Collect(func(typ Type) error {
+		if typ.Name == "<Module>" {
 			return nil
 		}
+		defer t.Log(typ.Namespace, typ.Name)
 
 		buf.Reset()
-		if err := tmpl.Execute(&buf, t); err != nil {
+		if err := tmpl.Execute(&buf, typ); err != nil {
 			return fmt.Errorf("execute: %w", err)
 		}
 
-		return w.Write(t.Namespace, t.Name, buf.Bytes())
+		return w.Write(typ.Namespace, typ.Name, buf.Bytes())
 	}))
 }

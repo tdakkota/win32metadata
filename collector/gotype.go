@@ -10,6 +10,7 @@ import (
 type namedType struct {
 	Name      string
 	Namespace string
+	Def       types.TypeDef
 	Union     bool
 }
 
@@ -40,6 +41,7 @@ func (c *collector) findNamedType(idx types.TypeDefOrRef) (namedType, error) {
 	return namedType{
 		Name:      d.TypeName,
 		Namespace: d.TypeNamespace,
+		Def:       d,
 		Union:     d.Flags.ExplicitLayout(),
 	}, nil
 }
@@ -85,6 +87,11 @@ func (c *collector) goType(imp *imports, e types.Element) (string, error) {
 		n := elemType.Name
 		switch {
 		case elemType.Union:
+			size, err := c.computeSize(e, 8)
+			if err != nil {
+				return "", err
+			}
+			name = fmt.Sprintf("[%d]byte", size)
 		case ns == "System" && n == "Guid":
 			name = "[128]byte"
 		case ns == "Windows.Win32.System.WinRT" && n == "HSTRING":
