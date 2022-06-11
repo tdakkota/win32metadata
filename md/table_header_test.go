@@ -1,7 +1,6 @@
 package md
 
 import (
-	"debug/pe"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,10 +9,7 @@ import (
 func TestMetadata_Tables(t *testing.T) {
 	a := require.New(t)
 
-	f, err := pe.Open(`./testdata/.windows/winmd/Windows.Win32.winmd`)
-	if err != nil {
-		t.Fatal(err)
-	}
+	f := openTestData(a, "_testdata/Windows.Win32.winmd")
 	defer f.Close()
 
 	file, err := ParseMetadata(f)

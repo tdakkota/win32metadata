@@ -1,17 +1,33 @@
 package md
 
 import (
+	"bytes"
 	"debug/pe"
+	"embed"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
+var (
+	//go:embed _testdata
+	testdata embed.FS
+)
+
+func openTestData(a *require.Assertions, p string) *pe.File {
+	data, err := testdata.ReadFile(p)
+	a.NoError(err)
+
+	f, err := pe.NewFile(bytes.NewReader(data))
+	a.NoError(err)
+
+	return f
+}
+
 func TestParseMetadata(t *testing.T) {
 	a := require.New(t)
 
-	f, err := pe.Open(`./testdata/.windows/winmd/Windows.Win32.winmd`)
-	a.NoError(err)
+	f := openTestData(a, `_testdata/Windows.Win32.winmd`)
 	defer f.Close()
 
 	m, err := ParseMetadata(f)
@@ -33,8 +49,7 @@ func TestParseMetadata(t *testing.T) {
 func TestMetadata_StreamByName(t *testing.T) {
 	a := require.New(t)
 
-	f, err := pe.Open(`./testdata/.windows/winmd/Windows.Win32.winmd`)
-	a.NoError(err)
+	f := openTestData(a, `_testdata/Windows.WinRT.winmd`)
 	defer f.Close()
 
 	m, err := ParseMetadata(f)
