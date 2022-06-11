@@ -1,4 +1,5 @@
-//+build ignore
+//go:build ignore
+// +build ignore
 
 package main
 
@@ -255,7 +256,7 @@ func (f *{{ $.Name }}) Resolve{{ $column.Name }}(c *Context) ({{ template "resol
 	return result, nil
 	{{- else }}
 	var t {{ $column.Index }}
-	if err := t.FromRow(table.Row(uint32(f.{{ $column.Name }}))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.{{ $column.Name }})-1)); err != nil {
 		return t, err
 	}
 	return t, nil
