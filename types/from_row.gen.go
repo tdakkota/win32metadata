@@ -129,7 +129,7 @@ func (f *AssemblyRefOS) FromRow(r Row) error {
 func (f *AssemblyRefOS) ResolveAssemblyRef(c *Context) (AssemblyRef, error) {
 	table := c.Table(md.AssemblyRef)
 	var t AssemblyRef
-	if err := t.FromRow(table.Row(uint32(f.AssemblyRef))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.AssemblyRef) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -158,7 +158,7 @@ func (f *AssemblyRefProcessor) FromRow(r Row) error {
 func (f *AssemblyRefProcessor) ResolveAssemblyRef(c *Context) (AssemblyRef, error) {
 	table := c.Table(md.AssemblyRef)
 	var t AssemblyRef
-	if err := t.FromRow(table.Row(uint32(f.AssemblyRef))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.AssemblyRef) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -241,7 +241,7 @@ func (f *ClassLayout) FromRow(r Row) error {
 func (f *ClassLayout) ResolveParent(c *Context) (TypeDef, error) {
 	table := c.Table(md.TypeDef)
 	var t TypeDef
-	if err := t.FromRow(table.Row(uint32(f.Parent))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Parent) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -374,7 +374,7 @@ func (f *EventMap) FromRow(r Row) error {
 func (f *EventMap) ResolveParent(c *Context) (TypeDef, error) {
 	table := c.Table(md.TypeDef)
 	var t TypeDef
-	if err := t.FromRow(table.Row(uint32(f.Parent))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Parent) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -490,7 +490,7 @@ func (f *FieldLayout) FromRow(r Row) error {
 func (f *FieldLayout) ResolveField(c *Context) (Field, error) {
 	table := c.Table(md.Field)
 	var t Field
-	if err := t.FromRow(table.Row(uint32(f.Field))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Field) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -538,7 +538,7 @@ func (f *FieldRVA) FromRow(r Row) error {
 func (f *FieldRVA) ResolveField(c *Context) (Field, error) {
 	table := c.Table(md.Field)
 	var t Field
-	if err := t.FromRow(table.Row(uint32(f.Field))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Field) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -626,7 +626,7 @@ func (f *GenericParamConstraint) FromRow(r Row) error {
 func (f *GenericParamConstraint) ResolveOwner(c *Context) (GenericParam, error) {
 	table := c.Table(md.GenericParam)
 	var t GenericParam
-	if err := t.FromRow(table.Row(uint32(f.Owner))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Owner) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -669,7 +669,7 @@ func (f *ImplMap) FromRow(r Row) error {
 func (f *ImplMap) ResolveImportScope(c *Context) (ModuleRef, error) {
 	table := c.Table(md.ModuleRef)
 	var t ModuleRef
-	if err := t.FromRow(table.Row(uint32(f.ImportScope))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.ImportScope) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -698,7 +698,7 @@ func (f *InterfaceImpl) FromRow(r Row) error {
 func (f *InterfaceImpl) ResolveClass(c *Context) (TypeDef, error) {
 	table := c.Table(md.TypeDef)
 	var t TypeDef
-	if err := t.FromRow(table.Row(uint32(f.Class))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Class) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -861,7 +861,7 @@ func (f *MethodImpl) FromRow(r Row) error {
 func (f *MethodImpl) ResolveClass(c *Context) (TypeDef, error) {
 	table := c.Table(md.TypeDef)
 	var t TypeDef
-	if err := t.FromRow(table.Row(uint32(f.Class))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Class) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -897,7 +897,7 @@ func (f *MethodSemantics) FromRow(r Row) error {
 func (f *MethodSemantics) ResolveMethod(c *Context) (MethodDef, error) {
 	table := c.Table(md.MethodDef)
 	var t MethodDef
-	if err := t.FromRow(table.Row(uint32(f.Method))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Method) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -997,7 +997,7 @@ func (f *NestedClass) FromRow(r Row) error {
 func (f *NestedClass) ResolveNestedClass(c *Context) (TypeDef, error) {
 	table := c.Table(md.TypeDef)
 	var t TypeDef
-	if err := t.FromRow(table.Row(uint32(f.NestedClass))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.NestedClass) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -1007,7 +1007,7 @@ func (f *NestedClass) ResolveNestedClass(c *Context) (TypeDef, error) {
 func (f *NestedClass) ResolveEnclosingClass(c *Context) (TypeDef, error) {
 	table := c.Table(md.TypeDef)
 	var t TypeDef
-	if err := t.FromRow(table.Row(uint32(f.EnclosingClass))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.EnclosingClass) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
@@ -1088,7 +1088,7 @@ func (f *PropertyMap) FromRow(r Row) error {
 func (f *PropertyMap) ResolveParent(c *Context) (TypeDef, error) {
 	table := c.Table(md.TypeDef)
 	var t TypeDef
-	if err := t.FromRow(table.Row(uint32(f.Parent))); err != nil {
+	if err := t.FromRow(table.Row(uint32(f.Parent) - 1)); err != nil {
 		return t, err
 	}
 	return t, nil
