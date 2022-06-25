@@ -115,7 +115,21 @@ func (s *SignatureReader) elementType(c *Context) (ElementType, error) {
 
 		return t, nil
 	case ELEMENT_TYPE_VAR:
-		// TODO(tdakkota) complete type-associated generics support
+		r, ok := s.Read()
+		if !ok {
+			return t, io.ErrUnexpectedEOF
+		}
+		t.GenericTypeVar.Index = r
+
+		return t, nil
+	case ELEMENT_TYPE_MVAR:
+		r, ok := s.Read()
+		if !ok {
+			return t, io.ErrUnexpectedEOF
+		}
+		t.GenericMethodVar.Index = r
+
+		return t, nil
 	case ELEMENT_TYPE_ARRAY:
 		elem, err := s.NextElement(c)
 		if err != nil {
@@ -165,9 +179,9 @@ func (s *SignatureReader) elementType(c *Context) (ElementType, error) {
 			Elem: &elem,
 		}
 		return t, nil
+	default:
+		return t, fmt.Errorf("unexpected element type %#x", value)
 	}
-
-	return t, fmt.Errorf("unexpected element type %#x", value)
 }
 
 func (s *SignatureReader) isConst(c *Context) (bool, error) {
@@ -216,9 +230,10 @@ func (s *SignatureReader) NextElement(c *Context) (e Element, _ error) {
 
 // MethodSignature is a II.23.2.1 MethodDefSig or II.23.2.2 MethodRefSig representation.
 type MethodSignature struct {
-	Flags  uint32
-	Return Element
-	Params []Element
+	Flags           uint32
+	GenericArgCount uint32
+	Return          Element
+	Params          []Element
 }
 
 // Method reads MethodSignature from Signature blob.
@@ -226,6 +241,15 @@ func (s *SignatureReader) Method(file *Context) (MethodSignature, error) {
 	flags, ok := s.Read()
 	if !ok {
 		return MethodSignature{}, io.ErrUnexpectedEOF
+	}
+
+	const METHOD_DEF_SIG_FLAGS_GENERIC = 0x10
+	var genericArgCount uint32
+	if flags&METHOD_DEF_SIG_FLAGS_GENERIC == METHOD_DEF_SIG_FLAGS_GENERIC {
+		genericArgCount, ok = s.Read()
+		if !ok {
+			return MethodSignature{}, io.ErrUnexpectedEOF
+		}
 	}
 
 	count, ok := s.Read()
@@ -251,9 +275,10 @@ func (s *SignatureReader) Method(file *Context) (MethodSignature, error) {
 	}
 
 	return MethodSignature{
-		Flags:  flags,
-		Return: returnType,
-		Params: params,
+		Flags:           flags,
+		GenericArgCount: genericArgCount,
+		Return:          returnType,
+		Params:          params,
 	}, nil
 }
 

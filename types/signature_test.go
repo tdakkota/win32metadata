@@ -40,6 +40,14 @@ func TestSignatureReader_Method(t *testing.T) {
 				Index: 6077,
 			},
 		}
+		mvar = func(idx uint32) ElementType {
+			return ElementType{
+				Kind: ELEMENT_TYPE_MVAR,
+				GenericMethodVar: ElementTypeGenericMethodVar{
+					Index: idx,
+				},
+			}
+		}
 	)
 
 	tests := []struct {
@@ -171,6 +179,55 @@ func TestSignatureReader_Method(t *testing.T) {
 				},
 			},
 		},
+		{
+			// VI.B.4.3 Metadata
+			// 	class Phone<K,V> {
+			// 	...
+			// 	static void AddOne<KK,VV>(Phone<KK,VV> phone, KK kk, VV vv) { // reading this signature
+			"GenericMethodExample",
+			Signature{
+				0x10, // IMAGE_CEE_CS_CALLCONV_GENERIC
+				0x02, // GenParamCount = 2 (2 generic parameters for this method: KK and VV
+				0x03, // ParamCount = 3 (phone, kk and vv)
+				0x01, // RetType = ELEMENT_TYPE_VOID
+				0x15, // Param-0: ELEMENT_TYPE_GENERICINST
+				0x12, // 	ELEMENT_TYPE_CLASS
+				0x08, // 	TypeDefOrRef coded index for class "Phone<KK,VV>"
+				0x02, // 	GenArgCount = 2
+				0x1e, // 	ELEMENT_TYPE_MVAR
+				0x00, // 	!!0 (KK in AddOne<KK,VV>)
+				0x1e, // 	ELEMENT_TYPE_MVAR
+				0x01, // 	!!1 (VV in AddOne<KK,VV>)
+				0x1e, // Param-1 ELEMENT_TYPE_MVAR
+				0x00, // !!0 (KK in AddOne<KK,VV>)
+				0x1e, // Param-2 ELEMENT_TYPE_MVAR
+				0x01, // !!1 (VV in AddOne<KK,VV>)
+			},
+			MethodSignature{
+				Flags:           0x10,
+				GenericArgCount: 2,
+				Return: Element{
+					Type: ElementType{Kind: ELEMENT_TYPE_VOID},
+				},
+				Params: []Element{
+					// Phone<KK,VV> phone,
+					{
+						Type: ElementType{
+							Kind: ELEMENT_TYPE_GENERICINST,
+							TypeDef: ElementTypeTypeDef{
+								Index: 8,
+								Generics: []ElementType{
+									mvar(0),
+									mvar(1),
+								},
+							},
+						},
+					},
+					{Type: mvar(0)},
+					{Type: mvar(1)},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -215,6 +272,33 @@ func TestSignatureReader_Field(t *testing.T) {
 					Kind: ELEMENT_TYPE_VALUETYPE,
 					TypeDef: ElementTypeTypeDef{
 						Index: 5,
+					},
+				},
+			}},
+		},
+		{
+			// VI.B.4.3 Metadata
+			// 	class Phone<K,V> {
+			// 		private V[] vals; // reading this signature
+			"ELEMENT_TYPE_VAR",
+			Signature{
+				0x06, // FIELD
+				0x1D, // ELEMENT_TYPE_SZARRAY
+				0x13, // ELEMENT_TYPE_VAR
+				0x01, // 1, representing generic argument number 1 (i.e., "V")
+			},
+			FieldSignature{Field: Element{
+				Type: ElementType{
+					Kind: ELEMENT_TYPE_SZARRAY,
+					SZArray: ElementTypeSZArray{
+						Elem: &Element{
+							Type: ElementType{
+								Kind: ELEMENT_TYPE_VAR,
+								GenericTypeVar: ElementTypeGenericTypeVar{
+									Index: 1,
+								},
+							},
+						},
 					},
 				},
 			}},

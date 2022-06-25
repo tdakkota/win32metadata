@@ -95,16 +95,30 @@ type ElementTypeTypeDef struct {
 	Generics []ElementType
 }
 
+// ElementTypeGenericTypeVar is a ElementType union variant structure.
+type ElementTypeGenericTypeVar struct {
+	Index uint32
+}
+
+// ElementTypeGenericMethodVar is a ElementType union variant structure.
+type ElementTypeGenericMethodVar struct {
+	Index uint32
+}
+
 // ElementType is a II.23.1.16 Element types used in signatures representation kind.
-// Only one of GenericParam, Array, SZArray, MethodDef, Field, TypeDefOrRef fields should be present.
+//
+// Only one of GenericParam, Array, SZArray, MethodDef, Field, TypeDef, GenericTypeVar, GenericMethodVar
+// fields should be present.
 type ElementType struct {
-	Kind         ElementTypeKind
-	GenericParam Index `table:"GenericParam"`
-	Array        ElementTypeArray
-	SZArray      ElementTypeSZArray
-	MethodDef    Index `table:"MethodDef"`
-	Field        Index `table:"Field"`
-	TypeDef      ElementTypeTypeDef
+	Kind             ElementTypeKind
+	GenericParam     Index `table:"GenericParam"`
+	Array            ElementTypeArray
+	SZArray          ElementTypeSZArray
+	MethodDef        Index `table:"MethodDef"`
+	Field            Index `table:"Field"`
+	TypeDef          ElementTypeTypeDef
+	GenericTypeVar   ElementTypeGenericTypeVar
+	GenericMethodVar ElementTypeGenericMethodVar
 }
 
 // FromCode tries to map code to ElementTypeKind.
