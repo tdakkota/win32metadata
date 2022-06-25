@@ -1,17 +1,15 @@
 package main
 
 import (
-	"context"
 	"debug/pe"
 	"flag"
 	"fmt"
 	"os"
-	"os/signal"
 
 	"github.com/tdakkota/win32metadata/types"
 )
 
-func run(context.Context) error {
+func run() error {
 	fileName := flag.String("file", "", "path to metadata file")
 	methodName := flag.String("method", "", "method to print")
 	typeNamespace := flag.String("namespace", "", "method namespace")
@@ -58,11 +56,9 @@ func run(context.Context) error {
 }
 
 func main() {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
-
-	if err := run(ctx); err != nil {
+	if err := run(); err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 		return
 	}
 }

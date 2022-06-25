@@ -67,8 +67,6 @@ func resolveTypeRef(t *types.Context, row types.Row) (types.TypeDef, uint32, err
 			if err := class.FromRow(nestedClasses.Row(i)); err != nil {
 				return types.TypeDef{}, 0, err
 			}
-			class.NestedClass--
-			class.EnclosingClass--
 
 			if class.EnclosingClass == idx {
 				def, err := class.ResolveNestedClass(t)
