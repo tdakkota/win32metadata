@@ -235,7 +235,7 @@ func (s *SignatureReader) Method(file *Context) (MethodSignature, error) {
 
 	returnType, err := s.NextElement(file)
 	if err != nil {
-		return MethodSignature{}, nil
+		return MethodSignature{}, err
 	}
 
 	var params []Element
@@ -244,7 +244,7 @@ func (s *SignatureReader) Method(file *Context) (MethodSignature, error) {
 		for i := 0; i < int(count); i++ {
 			t, err := s.NextElement(file)
 			if err != nil {
-				return MethodSignature{}, nil
+				return MethodSignature{}, err
 			}
 			params = append(params, t)
 		}
@@ -269,7 +269,7 @@ func (s *SignatureReader) Field(file *Context) (FieldSignature, error) {
 		return FieldSignature{}, io.ErrUnexpectedEOF
 	}
 	if typ != 0x6 {
-		return FieldSignature{}, fmt.Errorf("unexepcted field tpye %d", typ)
+		return FieldSignature{}, fmt.Errorf("unexpected field type %d", typ)
 	}
 
 	e, err := s.NextElement(file)
