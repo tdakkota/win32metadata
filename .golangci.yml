@@ -104,9 +104,9 @@ issues:
 
     - path: internal\.go
       text: "should have.+comment"
-      linters: [ golint ]
+      linters: [ revive, golint ]
 
-    # There are a lot of Win32 ALL_CAPS-named constants, so ignore this rule.
+    # There is a lot of Win32 ALL_CAPS-named constants, so ignore this rule.
     - text: "use ALL_CAPS in Go names; use CamelCase"
       linters: [ revive, stylecheck ]
     # ...and Id instead of ID...

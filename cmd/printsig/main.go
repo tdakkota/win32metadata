@@ -1,3 +1,4 @@
+// Command printsig prints the Go signature of a requested method.
 package main
 
 import (

@@ -1,3 +1,4 @@
+// Package types contains the types used to represent the Windows Metadata (ECMA-335).
 package types
 
 type (
