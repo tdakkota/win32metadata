@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"go/ast"
 	"go/format"
-	"go/parser"
 	"go/token"
 	"io"
 	"os"
@@ -67,13 +66,10 @@ func generateList() map[string]struct{} {
 
 func loadPackage(ctx context.Context, pkgName string) (*packages.Package, error) {
 	pkgs, err := packages.Load(&packages.Config{
-		Mode:    packages.NeedSyntax,
 		Context: ctx,
+		Mode:    packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax,
 		Env:     os.Environ(),
-		ParseFile: func(fset *token.FileSet, filename string, src []byte) (*ast.File, error) {
-			const mode = parser.AllErrors | parser.ParseComments
-			return parser.ParseFile(fset, filename, src, mode)
-		},
+		Tests:   false,
 	}, pkgName)
 	if err != nil {
 		return nil, fmt.Errorf("load package: %w", err)
