@@ -5,6 +5,9 @@ linters-settings:
     min-complexity: 15
   maligned:
     suggest-new: true
+  gosec:
+    excludes:
+      - G115 # Annoying and have a lot of false-positive results.
   dupl:
     threshold: 120
   goconst:
