@@ -11,9 +11,9 @@ var _ fmt.Stringer
 
 // TypeDefOrRef represents composite index one of
 //
-// 	TypeDef
-// 	TypeRef
-// 	TypeSpec
+//	TypeDef
+//	TypeRef
+//	TypeSpec
 //
 // table.
 type TypeDefOrRef uint32
@@ -28,10 +28,9 @@ func CreateTypeDefOrRef(tt md.TableType, idx uint32) TypeDefOrRef {
 // Tag returns TypeDefOrRef tag.
 // Tag table:
 //
-// 	TypeDef = 0
-// 	TypeRef = 1
-// 	TypeSpec = 2
-//
+//	TypeDef = 0
+//	TypeRef = 1
+//	TypeSpec = 2
 func (t TypeDefOrRef) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
 }
@@ -99,9 +98,9 @@ func (t TypeDefOrRef) String() string {
 
 // HasConstant represents composite index one of
 //
-// 	Field
-// 	Param
-// 	Property
+//	Field
+//	Param
+//	Property
 //
 // table.
 type HasConstant uint32
@@ -116,10 +115,9 @@ func CreateHasConstant(tt md.TableType, idx uint32) HasConstant {
 // Tag returns HasConstant tag.
 // Tag table:
 //
-// 	Field = 0
-// 	Param = 1
-// 	Property = 2
-//
+//	Field = 0
+//	Param = 1
+//	Property = 2
 func (t HasConstant) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
 }
@@ -187,28 +185,28 @@ func (t HasConstant) String() string {
 
 // HasCustomAttribute represents composite index one of
 //
-// 	MethodDef
-// 	Field
-// 	TypeRef
-// 	TypeDef
-// 	Param
-// 	InterfaceImpl
-// 	MemberRef
-// 	Module
-// 	Permission
-// 	Property
-// 	Event
-// 	StandAloneSig
-// 	ModuleRef
-// 	TypeSpec
-// 	Assembly
-// 	AssemblyRef
-// 	File
-// 	ExportedType
-// 	ManifestResource
-// 	GenericParam
-// 	GenericParamConstraint
-// 	MethodSpec
+//	MethodDef
+//	Field
+//	TypeRef
+//	TypeDef
+//	Param
+//	InterfaceImpl
+//	MemberRef
+//	Module
+//	Permission
+//	Property
+//	Event
+//	StandAloneSig
+//	ModuleRef
+//	TypeSpec
+//	Assembly
+//	AssemblyRef
+//	File
+//	ExportedType
+//	ManifestResource
+//	GenericParam
+//	GenericParamConstraint
+//	MethodSpec
 //
 // table.
 type HasCustomAttribute uint32
@@ -223,29 +221,28 @@ func CreateHasCustomAttribute(tt md.TableType, idx uint32) HasCustomAttribute {
 // Tag returns HasCustomAttribute tag.
 // Tag table:
 //
-// 	MethodDef = 0
-// 	Field = 1
-// 	TypeRef = 2
-// 	TypeDef = 3
-// 	Param = 4
-// 	InterfaceImpl = 5
-// 	MemberRef = 6
-// 	Module = 7
-// 	Permission = 8
-// 	Property = 9
-// 	Event = 10
-// 	StandAloneSig = 11
-// 	ModuleRef = 12
-// 	TypeSpec = 13
-// 	Assembly = 14
-// 	AssemblyRef = 15
-// 	File = 16
-// 	ExportedType = 17
-// 	ManifestResource = 18
-// 	GenericParam = 19
-// 	GenericParamConstraint = 20
-// 	MethodSpec = 21
-//
+//	MethodDef = 0
+//	Field = 1
+//	TypeRef = 2
+//	TypeDef = 3
+//	Param = 4
+//	InterfaceImpl = 5
+//	MemberRef = 6
+//	Module = 7
+//	Permission = 8
+//	Property = 9
+//	Event = 10
+//	StandAloneSig = 11
+//	ModuleRef = 12
+//	TypeSpec = 13
+//	Assembly = 14
+//	AssemblyRef = 15
+//	File = 16
+//	ExportedType = 17
+//	ManifestResource = 18
+//	GenericParam = 19
+//	GenericParamConstraint = 20
+//	MethodSpec = 21
 func (t HasCustomAttribute) Tag() uint32 {
 	return uint32(t & ((1 << 5) - 1))
 }
@@ -425,8 +422,8 @@ func (t HasCustomAttribute) String() string {
 
 // HasFieldMarshall represents composite index one of
 //
-// 	Field
-// 	Param
+//	Field
+//	Param
 //
 // table.
 type HasFieldMarshall uint32
@@ -441,9 +438,8 @@ func CreateHasFieldMarshall(tt md.TableType, idx uint32) HasFieldMarshall {
 // Tag returns HasFieldMarshall tag.
 // Tag table:
 //
-// 	Field = 0
-// 	Param = 1
-//
+//	Field = 0
+//	Param = 1
 func (t HasFieldMarshall) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
 }
@@ -505,9 +501,9 @@ func (t HasFieldMarshall) String() string {
 
 // HasDeclSecurity represents composite index one of
 //
-// 	TypeDef
-// 	MethodDef
-// 	Assembly
+//	TypeDef
+//	MethodDef
+//	Assembly
 //
 // table.
 type HasDeclSecurity uint32
@@ -522,10 +518,9 @@ func CreateHasDeclSecurity(tt md.TableType, idx uint32) HasDeclSecurity {
 // Tag returns HasDeclSecurity tag.
 // Tag table:
 //
-// 	TypeDef = 0
-// 	MethodDef = 1
-// 	Assembly = 2
-//
+//	TypeDef = 0
+//	MethodDef = 1
+//	Assembly = 2
 func (t HasDeclSecurity) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
 }
@@ -593,11 +588,11 @@ func (t HasDeclSecurity) String() string {
 
 // MemberRefParent represents composite index one of
 //
-// 	TypeDef
-// 	TypeRef
-// 	ModuleRef
-// 	MethodDef
-// 	TypeSpec
+//	TypeDef
+//	TypeRef
+//	ModuleRef
+//	MethodDef
+//	TypeSpec
 //
 // table.
 type MemberRefParent uint32
@@ -612,12 +607,11 @@ func CreateMemberRefParent(tt md.TableType, idx uint32) MemberRefParent {
 // Tag returns MemberRefParent tag.
 // Tag table:
 //
-// 	TypeDef = 0
-// 	TypeRef = 1
-// 	ModuleRef = 2
-// 	MethodDef = 3
-// 	TypeSpec = 4
-//
+//	TypeDef = 0
+//	TypeRef = 1
+//	ModuleRef = 2
+//	MethodDef = 3
+//	TypeSpec = 4
 func (t MemberRefParent) Tag() uint32 {
 	return uint32(t & ((1 << 3) - 1))
 }
@@ -697,8 +691,8 @@ func (t MemberRefParent) String() string {
 
 // HasSemantics represents composite index one of
 //
-// 	Event
-// 	Property
+//	Event
+//	Property
 //
 // table.
 type HasSemantics uint32
@@ -713,9 +707,8 @@ func CreateHasSemantics(tt md.TableType, idx uint32) HasSemantics {
 // Tag returns HasSemantics tag.
 // Tag table:
 //
-// 	Event = 0
-// 	Property = 1
-//
+//	Event = 0
+//	Property = 1
 func (t HasSemantics) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
 }
@@ -777,8 +770,8 @@ func (t HasSemantics) String() string {
 
 // MethodDefOrRef represents composite index one of
 //
-// 	MethodDef
-// 	MemberRef
+//	MethodDef
+//	MemberRef
 //
 // table.
 type MethodDefOrRef uint32
@@ -793,9 +786,8 @@ func CreateMethodDefOrRef(tt md.TableType, idx uint32) MethodDefOrRef {
 // Tag returns MethodDefOrRef tag.
 // Tag table:
 //
-// 	MethodDef = 0
-// 	MemberRef = 1
-//
+//	MethodDef = 0
+//	MemberRef = 1
 func (t MethodDefOrRef) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
 }
@@ -857,8 +849,8 @@ func (t MethodDefOrRef) String() string {
 
 // MemberForwarded represents composite index one of
 //
-// 	Field
-// 	MethodDef
+//	Field
+//	MethodDef
 //
 // table.
 type MemberForwarded uint32
@@ -873,9 +865,8 @@ func CreateMemberForwarded(tt md.TableType, idx uint32) MemberForwarded {
 // Tag returns MemberForwarded tag.
 // Tag table:
 //
-// 	Field = 0
-// 	MethodDef = 1
-//
+//	Field = 0
+//	MethodDef = 1
 func (t MemberForwarded) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
 }
@@ -937,9 +928,9 @@ func (t MemberForwarded) String() string {
 
 // Implementation represents composite index one of
 //
-// 	File
-// 	AssemblyRef
-// 	ExportedType
+//	File
+//	AssemblyRef
+//	ExportedType
 //
 // table.
 type Implementation uint32
@@ -954,10 +945,9 @@ func CreateImplementation(tt md.TableType, idx uint32) Implementation {
 // Tag returns Implementation tag.
 // Tag table:
 //
-// 	File = 0
-// 	AssemblyRef = 1
-// 	ExportedType = 2
-//
+//	File = 0
+//	AssemblyRef = 1
+//	ExportedType = 2
 func (t Implementation) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
 }
@@ -1025,11 +1015,11 @@ func (t Implementation) String() string {
 
 // CustomAttributeType represents composite index one of
 //
-// 	Not used
-// 	Not used
-// 	MethodDef
-// 	MemberRef
-// 	Not used
+//	Not used
+//	Not used
+//	MethodDef
+//	MemberRef
+//	Not used
 //
 // table.
 type CustomAttributeType uint32
@@ -1044,12 +1034,11 @@ func CreateCustomAttributeType(tt md.TableType, idx uint32) CustomAttributeType 
 // Tag returns CustomAttributeType tag.
 // Tag table:
 //
-// 	Not used = 0
-// 	Not used = 1
-// 	MethodDef = 2
-// 	MemberRef = 3
-// 	Not used = 4
-//
+//	Not used = 0
+//	Not used = 1
+//	MethodDef = 2
+//	MemberRef = 3
+//	Not used = 4
 func (t CustomAttributeType) Tag() uint32 {
 	return uint32(t & ((1 << 3) - 1))
 }
@@ -1123,10 +1112,10 @@ func (t CustomAttributeType) String() string {
 
 // ResolutionScope represents composite index one of
 //
-// 	Module
-// 	ModuleRef
-// 	AssemblyRef
-// 	TypeRef
+//	Module
+//	ModuleRef
+//	AssemblyRef
+//	TypeRef
 //
 // table.
 type ResolutionScope uint32
@@ -1141,11 +1130,10 @@ func CreateResolutionScope(tt md.TableType, idx uint32) ResolutionScope {
 // Tag returns ResolutionScope tag.
 // Tag table:
 //
-// 	Module = 0
-// 	ModuleRef = 1
-// 	AssemblyRef = 2
-// 	TypeRef = 3
-//
+//	Module = 0
+//	ModuleRef = 1
+//	AssemblyRef = 2
+//	TypeRef = 3
 func (t ResolutionScope) Tag() uint32 {
 	return uint32(t & ((1 << 2) - 1))
 }
@@ -1219,8 +1207,8 @@ func (t ResolutionScope) String() string {
 
 // TypeOrMethodDef represents composite index one of
 //
-// 	TypeDef
-// 	MethodDef
+//	TypeDef
+//	MethodDef
 //
 // table.
 type TypeOrMethodDef uint32
@@ -1235,9 +1223,8 @@ func CreateTypeOrMethodDef(tt md.TableType, idx uint32) TypeOrMethodDef {
 // Tag returns TypeOrMethodDef tag.
 // Tag table:
 //
-// 	TypeDef = 0
-// 	MethodDef = 1
-//
+//	TypeDef = 0
+//	MethodDef = 1
 func (t TypeOrMethodDef) Tag() uint32 {
 	return uint32(t & ((1 << 1) - 1))
 }
